@@ -1,6 +1,7 @@
 package com.steeringlawstudy.mod;
 
-import com.steeringlawstudy.mod.init.ModItems;
+import com.steeringlawstudy.mod.init.RegisterBlocks;
+import com.steeringlawstudy.mod.init.RegisterItems;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -28,8 +29,9 @@ public class SteeringLawStudy {
     // Creative Item Tab (own category for all the mods blocks/items in creative mode)
     public static final ItemGroup TAB = new ItemGroup("modTab") {
         @Override
+        // Tab icon
         public ItemStack createIcon() {
-            return new ItemStack(ModItems.RUBY.get());
+            return new ItemStack(RegisterItems.RUBY.get());
         }
     };
 
@@ -38,18 +40,16 @@ public class SteeringLawStudy {
 
     public SteeringLawStudy() {
         // Register the setup method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         // Register the enqueueIMC method for modloading
         // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         // Register the processIMC method for modloading
         // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-
         // Register the doClientStuff method for modloading
-        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
+        // FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
 
-
-        ModItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        RegisterItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        RegisterBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
 
 
         // Register ourselves for server and other game events we are interested in
@@ -57,14 +57,9 @@ public class SteeringLawStudy {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        // some preinit code
-        // LOGGER.info("HELLO FROM PREINIT");
-        // LOGGER.info("DIRT BLOCK >> {}", Blocks.DIRT.getRegistryName());
     }
 
     private void doClientStuff(final FMLClientSetupEvent event) {
-        // do something that can only be done on the client
-        // LOGGER.info("Got game settings {}", event.getMinecraftSupplier().get().gameSettings);
     }
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
