@@ -25,7 +25,7 @@ public class SteeringLawStudy {
     };
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger();
 
     public SteeringLawStudy() {
         RegisterItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
@@ -33,6 +33,6 @@ public class SteeringLawStudy {
 
 
         // Register ourselves for server and other game events we are interested in
-        MinecraftForge.EVENT_BUS.register(this);
+        // MinecraftForge.EVENT_BUS.register(this);
     }
 }
