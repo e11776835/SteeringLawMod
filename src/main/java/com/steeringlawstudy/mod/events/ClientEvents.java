@@ -4,6 +4,7 @@ import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.util.RayTrace;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -28,8 +29,34 @@ public class ClientEvents {
         // if food is held, target blocks are recorded
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
 
-        RayTraceResult lookingAtMC = Minecraft.getInstance().objectMouseOver;
-        BlockPos posMC = new BlockPos(lookingAtMC.getHitVec().x, lookingAtMC.getHitVec().y, lookingAtMC.getHitVec().z);
+        BlockRayTraceResult lookingAtMC = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
+        BlockPos posMC;
+        Direction dirMC = lookingAtMC.getFace();
+
+        if (dirMC == Direction.SOUTH) {
+            posMC = new BlockPos(
+                    lookingAtMC.getHitVec().getX(),
+                    lookingAtMC.getHitVec().getY(),
+                    lookingAtMC.getHitVec().getZ() - 1);
+
+        } else if (dirMC == Direction.EAST) {
+            posMC = new BlockPos(
+                    lookingAtMC.getHitVec().getX() - 1,
+                    lookingAtMC.getHitVec().getY(),
+                    lookingAtMC.getHitVec().getZ());
+
+        } else if (dirMC == Direction.UP) {
+            posMC = new BlockPos(
+                    lookingAtMC.getHitVec().getX(),
+                    lookingAtMC.getHitVec().getY() - 1,
+                    lookingAtMC.getHitVec().getZ());
+
+        } else {
+            posMC = new BlockPos(
+                    lookingAtMC.getHitVec().getX(),
+                    lookingAtMC.getHitVec().getY(),
+                    lookingAtMC.getHitVec().getZ());
+        }
 
         if (lookingAtMC.getType() == RayTraceResult.Type.BLOCK) {
             String blockMC = world.getBlockState(posMC).getBlock().toString();
@@ -44,8 +71,33 @@ public class ClientEvents {
 
             BlockRayTraceResult lookingAtMod = RayTrace.getTargetBlock(player, 200);
             BlockPos posMod;
+            Direction dirMod = lookingAtMod.getFace();
 
-            posMod = new BlockPos(lookingAtMod.getHitVec().getX(), lookingAtMod.getHitVec().getY(), lookingAtMod.getHitVec().getZ());
+            if (dirMod == Direction.SOUTH) {
+                posMod = new BlockPos(
+                        lookingAtMod.getHitVec().getX(),
+                        lookingAtMod.getHitVec().getY(),
+                        lookingAtMod.getHitVec().getZ() - 1);
+
+            } else if (dirMod == Direction.EAST) {
+                posMod = new BlockPos(
+                        lookingAtMod.getHitVec().getX() - 1,
+                        lookingAtMod.getHitVec().getY(),
+                        lookingAtMod.getHitVec().getZ());
+
+            } else if (dirMod == Direction.UP) {
+                posMod = new BlockPos(
+                        lookingAtMod.getHitVec().getX(),
+                        lookingAtMod.getHitVec().getY() - 1,
+                        lookingAtMod.getHitVec().getZ());
+
+            } else {
+                posMod = new BlockPos(
+                        lookingAtMod.getHitVec().getX(),
+                        lookingAtMod.getHitVec().getY(),
+                        lookingAtMod.getHitVec().getZ());
+            }
+
             String block = world.getBlockState(posMod).getBlock().toString();
             String blockNameMod = world.getBlockState(posMod).getBlock().getTranslationKey();
 
