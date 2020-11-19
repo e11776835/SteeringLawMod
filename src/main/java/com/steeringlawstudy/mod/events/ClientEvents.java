@@ -7,7 +7,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -18,24 +20,39 @@ import net.minecraftforge.fml.common.Mod;
 public class ClientEvents {
     @SubscribeEvent
     public static void getTargetBlockWithFood(LivingEvent.LivingUpdateEvent event) {
+        World world = event.getEntity().getEntityWorld();
+        if (!world.isRemote) return;
+
         LivingEntity player = event.getEntityLiving();
 
+        // if food is held, target blocks are recorded
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
 
-        BlockRayTraceResult lookingAt = RayTrace.getTargetBlock(player, 100);
+        RayTraceResult lookingAtMC = Minecraft.getInstance().objectMouseOver;
+        BlockPos posMC = new BlockPos(lookingAtMC.getHitVec().x, lookingAtMC.getHitVec().y, lookingAtMC.getHitVec().z);
 
-        BlockPos pos;
+        if (lookingAtMC.getType() == RayTraceResult.Type.BLOCK) {
+            String blockMC = world.getBlockState(posMC).getBlock().toString();
+            String blockNameMC = world.getBlockState(posMC).getBlock().getTranslationKey();
 
-        if (lookingAt != null) {
-            pos = new BlockPos(lookingAt.getHitVec().getX(), lookingAt.getHitVec().getY(), lookingAt.getHitVec().getZ());
-            String blockstate = Minecraft.getInstance().world.getBlockState(pos).toString();
+            if (!blockNameMC.equals("block.minecraft.air") && !blockNameMC.equals("block.minecraft.void_air")) {
+                player.sendMessage(new StringTextComponent("MC " + blockMC), player.getUniqueID());
+                player.sendMessage(new StringTextComponent(posMC.toString()), player.getUniqueID());
+            }
+            // if built-in player-raytrace misses, use custom one
+        } else if (lookingAtMC.getType() == RayTraceResult.Type.MISS) {
 
-            player.sendMessage(new StringTextComponent(blockstate), player.getUniqueID());
-            // SteeringLawStudy.LOGGER.info(blockstate);
+            BlockRayTraceResult lookingAtMod = RayTrace.getTargetBlock(player, 200);
+            BlockPos posMod;
 
-        } else {
-            player.sendMessage(new StringTextComponent("nothing to see here.."), player.getUniqueID());
-            SteeringLawStudy.LOGGER.info("nothing to see here..");
+            posMod = new BlockPos(lookingAtMod.getHitVec().getX(), lookingAtMod.getHitVec().getY(), lookingAtMod.getHitVec().getZ());
+            String block = world.getBlockState(posMod).getBlock().toString();
+            String blockNameMod = world.getBlockState(posMod).getBlock().getTranslationKey();
+
+            if (!blockNameMod.equals("block.minecraft.air") && !blockNameMod.equals("block.minecraft.void_air")) {
+                player.sendMessage(new StringTextComponent("MOD " + block), player.getUniqueID());
+                player.sendMessage(new StringTextComponent(posMod.toString()), player.getUniqueID());
+            }
         }
     }
 }
