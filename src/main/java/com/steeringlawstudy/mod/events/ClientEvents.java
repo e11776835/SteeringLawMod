@@ -8,7 +8,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -19,6 +18,7 @@ import net.minecraftforge.fml.common.Mod;
 // this will enable verification of user movement through paths
 @Mod.EventBusSubscriber(modid = SteeringLawStudy.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEvents {
+
     @SubscribeEvent
     public static void getTargetBlockWithFood(LivingEvent.LivingUpdateEvent event) {
         World world = event.getEntity().getEntityWorld();
@@ -37,21 +37,20 @@ public class ClientEvents {
             String blockNameMC = world.getBlockState(posMC).getBlock().getTranslationKey();
 
             if (!blockNameMC.equals("block.minecraft.air") && !blockNameMC.equals("block.minecraft.void_air")) {
-                player.sendMessage(new StringTextComponent("MC " + blockMC), player.getUniqueID());
-                player.sendMessage(new StringTextComponent(posMC.toString()), player.getUniqueID());
+                SteeringLawStudy.LOGGER.info("MC " + blockMC + " - " + posMC.toString());
             }
+
             // if built-in player-raytrace misses, use custom one
         } else if (lookingAtMC.getType() == RayTraceResult.Type.MISS) {
 
             BlockRayTraceResult lookingAtMod = RayTrace.getTargetBlock(player, 200);
             BlockPos posMod = RayTrace.fixCoords(lookingAtMod);
 
-            String block = world.getBlockState(posMod).getBlock().toString();
+            String blockMod = world.getBlockState(posMod).getBlock().toString();
             String blockNameMod = world.getBlockState(posMod).getBlock().getTranslationKey();
 
             if (!blockNameMod.equals("block.minecraft.air") && !blockNameMod.equals("block.minecraft.void_air")) {
-                player.sendMessage(new StringTextComponent("MOD " + block), player.getUniqueID());
-                player.sendMessage(new StringTextComponent(posMod.toString()), player.getUniqueID());
+                SteeringLawStudy.LOGGER.info("Mod " + blockMod + " - " + posMod.toString());
             }
         }
     }

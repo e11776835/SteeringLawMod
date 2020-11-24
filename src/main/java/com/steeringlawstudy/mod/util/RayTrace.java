@@ -14,21 +14,20 @@ public class RayTrace {
     private static World world = Minecraft.getInstance().world;
 
     // extends standard minecraft ray trace by more distance
-    public static BlockRayTraceResult getTargetBlock(LivingEntity player, int maxdistance) {
+    public static BlockRayTraceResult getTargetBlock(LivingEntity player, int maxDist) {
         Vector3d vec = player.getPositionVec();
         Vector3d vec3 = new Vector3d(vec.x, vec.y + player.getEyeHeight(), vec.z);
         Vector3d vec3a = player.getLook(1.0F);
-        Vector3d vec3b = vec3.add(vec3a.getX() * maxdistance, vec3a.getY() * maxdistance, vec3a.getZ() * maxdistance);
+        Vector3d vec3b = vec3.add(vec3a.getX() * maxDist, vec3a.getY() * maxDist, vec3a.getZ() * maxDist);
 
         RayTraceContext context = new RayTraceContext(vec3, vec3b, RayTraceContext.BlockMode.OUTLINE, RayTraceContext.FluidMode.ANY, player);
-
         BlockRayTraceResult lookingAtMod = world.rayTraceBlocks(context);
 
-        double xm = lookingAtMod.getHitVec().getX();
-        double ym = lookingAtMod.getHitVec().getY();
-        double zm = lookingAtMod.getHitVec().getZ();
+        double xPos = lookingAtMod.getHitVec().getX();
+        double yPos = lookingAtMod.getHitVec().getY();
+        double zPos = lookingAtMod.getHitVec().getZ();
 
-        return new BlockRayTraceResult(lookingAtMod.getHitVec(), lookingAtMod.getFace(), new BlockPos(xm, ym, zm), false);
+        return new BlockRayTraceResult(lookingAtMod.getHitVec(), lookingAtMod.getFace(), new BlockPos(xPos, yPos, zPos), false);
     }
 
     // fixes bug in minecrafts ray trace methods
