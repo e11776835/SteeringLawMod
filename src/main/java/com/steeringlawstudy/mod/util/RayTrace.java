@@ -9,6 +9,7 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
+// allows to see the exact block the player is looking at
 public class RayTrace {
 
     private static World world = Minecraft.getInstance().world;

@@ -14,6 +14,6 @@ public class RubyBlock extends Block {
                 .harvestLevel(2)
                 .harvestTool(ToolType.PICKAXE)
                 .setRequiresTool()
-                .setLightLevel(value -> 4));
+                .setLightLevel(value -> 15));
     }
 }
