@@ -20,7 +20,7 @@ version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Steering Law Study" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="http://myurl.me/" #optional
+# updateJSONURL="http://myurl.me/" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
 displayURL="https://github.com/e11776835/SteeringLawMod" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
@@ -35,7 +35,7 @@ This mod was created as part of a bachelor's thesis to verify Minecrafts researc
 
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.steeringlawstudy]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -47,9 +47,9 @@ This mod was created as part of a bachelor's thesis to verify Minecrafts researc
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.steeringlawstudy]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.1]"
     ordering="NONE"
     side="BOTH"
