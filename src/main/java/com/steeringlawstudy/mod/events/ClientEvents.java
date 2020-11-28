@@ -44,8 +44,8 @@ public class ClientEvents {
             String blockNameMC = world.getBlockState(posMC).getBlock().getTranslationKey();
 
             if (!blockNameMC.equals("block.minecraft.air") && !blockNameMC.equals("block.minecraft.void_air")) {
-                StringTextComponent mcText = new StringTextComponent("trgt " + blockMC /* + " - " + posMod.toString() */);
-                SteeringLawStudy.LOGGER.info(mcText);
+                StringTextComponent mcText = new StringTextComponent("trgt " + blockNameMC /* + " - " + posMod.toString() */);
+                SteeringLawStudy.LOGGER.info(mcText.getText());
                 // player.sendMessage(mcText, player.getUniqueID());
             }
 
@@ -59,8 +59,8 @@ public class ClientEvents {
             String blockNameMod = world.getBlockState(posMod).getBlock().getTranslationKey();
 
             if (!blockNameMod.equals("block.minecraft.air") && !blockNameMod.equals("block.minecraft.void_air")) {
-                StringTextComponent modText = new StringTextComponent("trgt " + blockMod /* + " - " + posMod.toString() */);
-                SteeringLawStudy.LOGGER.info(modText);
+                StringTextComponent modText = new StringTextComponent("trgt " + blockNameMod /* + " - " + posMod.toString() */);
+                SteeringLawStudy.LOGGER.info(modText.getText());
                 // player.sendMessage(modText, player.getUniqueID());
             }
         }
@@ -69,8 +69,8 @@ public class ClientEvents {
     // executes dataValidator when player leaves world
     @SubscribeEvent
     public static void blub(PlayerEvent.PlayerLoggedOutEvent event) {
-        SteeringLawStudy.LOGGER.info(new StringTextComponent("PARSE DATA HERE"));
+        SteeringLawStudy.LOGGER.info("PARSE DATA HERE");
         DataValidator.parseData();
-        SteeringLawStudy.LOGGER.info(new StringTextComponent("PARSE COMPLETED"));
+        SteeringLawStudy.LOGGER.info("PARSE COMPLETED");
     }
 }

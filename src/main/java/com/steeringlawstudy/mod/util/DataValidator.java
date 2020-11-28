@@ -1,6 +1,7 @@
 package com.steeringlawstudy.mod.util;
 
 import java.io.*;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 import static com.steeringlawstudy.mod.SteeringLawStudy.LOGGER;
@@ -13,20 +14,26 @@ public class DataValidator {
         try {
             in = new Scanner(new File("../run/logs/latest.log"));
         } catch (FileNotFoundException e) {
-            LOGGER.info(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 
     // todo --> parse log file and collect data for analysis
     public static void parseData() {
-        // todo --> increase file name with each trial
-        String currentName = "huhu";
+        LocalDateTime now = LocalDateTime.now();
+        String fileName = "data-" + now.getYear() +
+                "-" + now.getMonthValue() +
+                "-" + now.getDayOfMonth() +
+                "-" + now.toLocalTime().toSecondOfDay();
 
         try {
-            File log = new File("../run/study/" + currentName + ".log");
+            File log = new File("../run/study/" + fileName + ".log");
 
             if (!log.exists()) {
                 log.createNewFile();
+            } else {
+                LOGGER.error("FILE EXISTS ALREADY! -" + fileName + ".log");
+                return;
             }
 
             PrintWriter out = new PrintWriter(log);
@@ -42,8 +49,10 @@ public class DataValidator {
                 line = in.nextLine();
             }
 
+            out.close();
+
         } catch (IOException e) {
-            LOGGER.info(e.getMessage());
+            LOGGER.error(e.getMessage());
         }
     }
 }
