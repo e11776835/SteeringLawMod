@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
@@ -33,6 +34,8 @@ public class ClientEvents {
         // if food is held, target blocks are recorded
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
 
+        if (Minecraft.getInstance().objectMouseOver.getClass() == EntityRayTraceResult.class) return;
+
         BlockRayTraceResult lookingAtMC = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
         BlockPos posMC = RayTrace.fixCoords(lookingAtMC);
 
@@ -42,9 +45,8 @@ public class ClientEvents {
 
             if (!blockNameMC.equals("block.minecraft.air") && !blockNameMC.equals("block.minecraft.void_air")) {
                 StringTextComponent mcText = new StringTextComponent("trgt " + blockMC /* + " - " + posMod.toString() */);
-
                 SteeringLawStudy.LOGGER.info(mcText);
-                player.sendMessage(mcText, player.getUniqueID());
+                // player.sendMessage(mcText, player.getUniqueID());
             }
 
             // if built-in player-raytrace misses, use custom one
@@ -58,9 +60,8 @@ public class ClientEvents {
 
             if (!blockNameMod.equals("block.minecraft.air") && !blockNameMod.equals("block.minecraft.void_air")) {
                 StringTextComponent modText = new StringTextComponent("trgt " + blockMod /* + " - " + posMod.toString() */);
-
                 SteeringLawStudy.LOGGER.info(modText);
-                player.sendMessage(modText, player.getUniqueID());
+                // player.sendMessage(modText, player.getUniqueID());
             }
         }
     }
