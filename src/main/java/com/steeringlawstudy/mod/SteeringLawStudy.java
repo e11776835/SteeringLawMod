@@ -9,7 +9,9 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-// The value here should match an entry in the META-INF/mods.toml file
+/**
+ * "main" class for the mod, this is where the mod registers itself to the game
+ */
 @Mod("steeringlawstudy")
 public class SteeringLawStudy {
     public static final String MOD_ID = "steeringlawstudy";
@@ -25,6 +27,14 @@ public class SteeringLawStudy {
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
+
+    // output path for study logfiles
+    public static final String OUT_PATH = "../study";
+
+    // block definitions
+    public static final String START_BLOCK = "lime_concrete";
+    public static final String STOP_BLOCK = "red_concrete";
+    public static final String PATH_BLOCK = "quartz_block";
 
     public SteeringLawStudy() {
         RegisterItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());

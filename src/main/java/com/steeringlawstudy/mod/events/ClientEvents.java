@@ -18,12 +18,16 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-// here certain events triggered by the player are handled
+/**
+ * here certain events triggered by the player are handled
+ */
 @Mod.EventBusSubscriber(modid = SteeringLawStudy.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEvents {
 
-    // while holding a food item, the targeted block is recorded
-    // this will enable verification of user movement through paths
+    /**
+     * while holding a food item, the targeted block is recorded
+     * this will enable verification of user movement through paths
+     */
     @SubscribeEvent
     public static void getTargetBlockWithFood(LivingEvent.LivingUpdateEvent event) {
         World world = event.getEntity().getEntityWorld();
@@ -31,7 +35,7 @@ public class ClientEvents {
 
         LivingEntity player = event.getEntityLiving();
 
-        // if food is held, target blocks are recorded
+        // if food is held, target blocks are recorded.. otherwise abort
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
 
         if (Minecraft.getInstance().objectMouseOver.getClass() == EntityRayTraceResult.class) return;
@@ -49,7 +53,7 @@ public class ClientEvents {
                 // player.sendMessage(mcText, player.getUniqueID());
             }
 
-            // if built-in player-raytrace misses, use custom one
+            // if built-in player-raytrace misses, use extended one
         } else if (lookingAtMC.getType() == RayTraceResult.Type.MISS) {
 
             BlockRayTraceResult lookingAtMod = RayTrace.getTargetBlock(player, 200);
@@ -66,11 +70,13 @@ public class ClientEvents {
         }
     }
 
-    // executes dataValidator when player leaves world
+    /**
+     * executes dataValidator when player leaves world
+     */
     @SubscribeEvent
-    public static void blub(PlayerEvent.PlayerLoggedOutEvent event) {
-        SteeringLawStudy.LOGGER.info("PARSE DATA HERE");
+    public static void validateDataOnExit(PlayerEvent.PlayerLoggedOutEvent event) {
+        SteeringLawStudy.LOGGER.info("starting data parsing");
         DataValidator.parseData();
-        SteeringLawStudy.LOGGER.info("PARSE COMPLETED");
+        SteeringLawStudy.LOGGER.info("parse completed");
     }
 }
