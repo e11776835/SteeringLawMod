@@ -34,7 +34,8 @@ public class SteeringLawStudy {
     // block definitions
     public static final String START_BLOCK = "lime_concrete";
     public static final String STOP_BLOCK = "red_concrete";
-    public static final String PATH_BLOCK = "quartz_block";
+    public static final String PATH_BLOCK = "white_concrete";
+    public static final String PATH_VISITED_BLOCK = "yellow_concrete";
 
     public SteeringLawStudy() {
         RegisterItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());

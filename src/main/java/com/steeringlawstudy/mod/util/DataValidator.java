@@ -9,14 +9,20 @@ import java.util.Scanner;
 
 import static com.steeringlawstudy.mod.SteeringLawStudy.LOGGER;
 import static com.steeringlawstudy.mod.SteeringLawStudy.OUT_PATH;
+
 import static com.steeringlawstudy.mod.SteeringLawStudy.START_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.STOP_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.PATH_BLOCK;
 
 /**
- * parses data gathered  in logfile during experiments for statistical analysis
+ * util class for experiment data handling
  */
 public class DataValidator {
+
+    /**
+     * parses data gathered in logfile during experiments for statistical analysis
+     * creates logfile with details about the experiment
+     */
     public static void parseData() {
         LocalDateTime now = LocalDateTime.now();
         // todo --> to be exportable, file directory should be handled differently
@@ -60,13 +66,12 @@ public class DataValidator {
                 boolean outOfBounds = true;
                 boolean statusChanged;
                 boolean setStart = false;
+                boolean running = true;
 
                 // go through log file and parse relevant data..
                 out.println("===[tick]=== ===[status]=== =[ms]=");
 
-                while (in.hasNextLine()) {
-                    // todo --> add bool check to see if experiment is currently going on
-
+                while (running) {
                     // only read lines containing the keyword "trgt"
                     if (line.lastIndexOf("trgt") > -1) {
                         statusChanged = false;
@@ -117,9 +122,22 @@ public class DataValidator {
                         lastBlock = block;
                         lastTick = tick;
                     }
-                    lastLine = line;
-                    line = in.nextLine();
+
+                    if (in.hasNextLine()) {
+                        lastLine = line;
+                        line = in.nextLine();
+                    } else {
+                        // log last open position in targeted blocks
+                        tick = lastTick.plusNanos(50000000);
+                        timeSpent = timeSpent + ChronoUnit.MICROS.between(lastTick, tick);
+                        out.println(tick + " " + lastBlock + "\t" +
+                                TimeUnit.MILLISECONDS.convert(timeSpent, TimeUnit.MICROSECONDS));
+                        out.println("==================================");
+                        running = false;
+                    }
                 }
+
+                in.close();
                 out.close();
 
             } catch (FileNotFoundException e) {
