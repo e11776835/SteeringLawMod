@@ -3,7 +3,6 @@ package com.steeringlawstudy.mod.events;
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.util.DataValidator;
 import com.steeringlawstudy.mod.util.PosHelper;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
@@ -31,7 +30,7 @@ public class ClientEvents {
      * this will enable verification of user movement through paths
      */
     @SubscribeEvent
-    public static void getTargetBlockWithFood(LivingEvent.LivingUpdateEvent event) {
+    public static void getTargetBlock(LivingEvent.LivingUpdateEvent event) {
         World world = event.getEntity().getEntityWorld();
         if (!world.isRemote) return;
 
@@ -45,52 +44,27 @@ public class ClientEvents {
 
         if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
 
-        BlockRayTraceResult lookingAtMC = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
-        BlockPos posMC = PosHelper.fixCoords(lookingAtMC);
+        BlockRayTraceResult lookingAt = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
 
-        if (lookingAtMC.getType() == RayTraceResult.Type.BLOCK) {
-            // String blockMC = world.getBlockState(posMC).getBlock().toString();
-            String blockNameMC = world.getBlockState(posMC).getBlock().getTranslationKey();
+        // if built-in player-raytrace misses, use extended one
+        if (lookingAt.getType() == RayTraceResult.Type.MISS) {
+            lookingAt = PosHelper.getTargetBlock(player, 200);
+        }
 
-            if (posMC != lastTargetPos) {
-                lastTargetPos = posMC;
+        BlockPos pos = PosHelper.fixCoords(lookingAt);
+        String blockName = world.getBlockState(pos).getBlock().getTranslationKey();
 
-                StringTextComponent mcText = new StringTextComponent("trgt " + blockNameMC +
-                        " [" + posMC.getX() + "/" + posMC.getY() + "/" + posMC.getZ() + "]");
-                SteeringLawStudy.LOGGER.info(mcText.getText());
-                // player.sendMessage(mcText, player.getUniqueID());
+        // only record if target block changes
+        if (pos != lastTargetPos) {
+            lastTargetPos = pos;
 
-                // only record changing of targeted blocks
-                if (PosHelper.isPosEqual(lastTargetPos, posMC)) return;
-                // TODO list.add(blockNameMC);
-//                if (blockNameMC.equals("block.minecraft.white_concrete")) {
-//                    world.setBlockState(posMC, Blocks.YELLOW_CONCRETE.getDefaultState());
-//                }
-            }
+            StringTextComponent mcText = new StringTextComponent("trgt " + blockName +
+                    " [" + pos.getX() + "/" + pos.getY() + "/" + pos.getZ() + "]");
+            SteeringLawStudy.LOGGER.info(mcText.getText());
+            // player.sendMessage(mcText, player.getUniqueID());
 
-            // if built-in player-raytrace misses, use extended one
-        } else if (lookingAtMC.getType() == RayTraceResult.Type.MISS) {
-
-            BlockRayTraceResult lookingAtMod = PosHelper.getTargetBlock(player, 200);
-            BlockPos posMod = PosHelper.fixCoords(lookingAtMod);
-
-            // String blockMod = world.getBlockState(posMod).getBlock().toString();
-            String blockNameMod = world.getBlockState(posMod).getBlock().getTranslationKey();
-
-            if (posMod != lastTargetPos) {
-                lastTargetPos = posMod;
-
-                StringTextComponent modText = new StringTextComponent("trgt " + blockNameMod +
-                        " [" + posMod.getX() + "/" + posMod.getY() + "/" + posMod.getZ() + "]");
-                SteeringLawStudy.LOGGER.info(modText.getText());
-                // player.sendMessage(modText, player.getUniqueID());
-
-                if (PosHelper.isPosEqual(lastTargetPos, posMod)) return;
-                // TODO list.add(blockNameMod);
-//                if (blockNameMod.equals("block.minecraft.white_concrete")) {
-//                    world.setBlockState(posMod, Blocks.YELLOW_CONCRETE.getDefaultState());
-//                }
-            }
+            // only record changing of targeted blocks
+            if (PosHelper.isPosEqual(lastTargetPos, pos)) return;
         }
     }
 
