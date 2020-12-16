@@ -60,6 +60,7 @@ public class ClientEvents {
                 SteeringLawStudy.LOGGER.info(mcText.getText());
                 // player.sendMessage(mcText, player.getUniqueID());
 
+                // only record changing of targeted blocks
                 if (PosHelper.isPosEqual(lastTargetPos, posMC)) return;
                 // TODO list.add(blockNameMC);
 //                if (blockNameMC.equals("block.minecraft.white_concrete")) {
