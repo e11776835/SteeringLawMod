@@ -13,6 +13,7 @@ import static com.steeringlawstudy.mod.SteeringLawStudy.OUT_PATH;
 import static com.steeringlawstudy.mod.SteeringLawStudy.START_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.STOP_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.PATH_BLOCK;
+import static com.steeringlawstudy.mod.SteeringLawStudy.PATH_VISITED_BLOCK;
 
 /**
  * util class for experiment data handling
@@ -89,6 +90,7 @@ public class DataValidator {
                         // check if status changed (out of bounds / inside bounds)..
                         if (line.lastIndexOf(START_BLOCK) != -1 ||
                                 line.lastIndexOf(STOP_BLOCK) != -1 ||
+                                line.lastIndexOf(PATH_VISITED_BLOCK) != -1 ||
                                 line.lastIndexOf(PATH_BLOCK) != -1) {
                             //.. and define output text accordingly
                             if (outOfBounds) {

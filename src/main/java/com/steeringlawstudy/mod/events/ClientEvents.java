@@ -1,6 +1,7 @@
 package com.steeringlawstudy.mod.events;
 
 import com.steeringlawstudy.mod.SteeringLawStudy;
+import com.steeringlawstudy.mod.tunnels.TunnelManager;
 import com.steeringlawstudy.mod.util.DataValidator;
 import com.steeringlawstudy.mod.util.PosHelper;
 import net.minecraft.client.Minecraft;
@@ -55,7 +56,7 @@ public class ClientEvents {
         String blockName = world.getBlockState(pos).getBlock().getTranslationKey();
 
         // only record if target block changes
-        if (pos != lastTargetPos) {
+        if (!PosHelper.isPosEqual(lastTargetPos, pos)) {
             lastTargetPos = pos;
 
             StringTextComponent mcText = new StringTextComponent("trgt " + blockName +
@@ -63,8 +64,8 @@ public class ClientEvents {
             SteeringLawStudy.LOGGER.info(mcText.getText());
             // player.sendMessage(mcText, player.getUniqueID());
 
-            // only record changing of targeted blocks
-            if (PosHelper.isPosEqual(lastTargetPos, pos)) return;
+            // give coordinates of targeted block to TunnelManager
+            TunnelManager.manage(pos, world);
         }
     }
 

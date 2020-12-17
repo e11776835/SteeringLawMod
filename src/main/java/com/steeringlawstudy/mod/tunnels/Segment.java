@@ -1,6 +1,7 @@
 package com.steeringlawstudy.mod.tunnels;
 
-import net.minecraft.block.Block;
+import com.steeringlawstudy.mod.util.SegmentType;
+import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 /**
@@ -9,21 +10,37 @@ import net.minecraft.util.math.BlockPos;
  */
 public class Segment {
     public String name;
-    private Block block;
     private BlockPos pos;
-    private int x,y,z;
+    private SegmentType type;
+    private int x, y, z;
     private boolean visited = false;
     private Tunnel tunnel;
 
-    public Segment(Block b, BlockPos p) {
-        block = b;
+    public Segment(BlockPos p, SegmentType st, Tunnel t) {
         pos = p;
+        type = st;
+        tunnel = t;
         x = p.getX();
         y = p.getY();
         z = p.getZ();
+        name = TunnelManager.getSegmentName(p);
+    }
+
+    public void setVisited() {
+        if (type == SegmentType.PATH) {
+            visited = true;
+            tunnel.getWorld().setBlockState(pos, Blocks.YELLOW_CONCRETE.getDefaultState());
+        }
+    }
+
+    public SegmentType getType() {
+        return type;
     }
 
     public void reset() {
-        visited = false;
+        if (type.equals(SegmentType.PATH)) {
+            visited = false;
+            tunnel.getWorld().setBlockState(pos, Blocks.WHITE_CONCRETE.getDefaultState());
+        }
     }
 }
