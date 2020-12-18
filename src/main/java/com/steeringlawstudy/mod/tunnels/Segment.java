@@ -28,9 +28,13 @@ public class Segment {
 
     public void setVisited() {
         if (type == SegmentType.PATH) {
-            visited = true;
             tunnel.getWorld().setBlockState(pos, Blocks.YELLOW_CONCRETE.getDefaultState());
         }
+        visited = true;
+    }
+
+    public boolean wasVisited() {
+        return visited;
     }
 
     public SegmentType getType() {
@@ -39,8 +43,8 @@ public class Segment {
 
     public void reset() {
         if (type.equals(SegmentType.PATH)) {
-            visited = false;
             tunnel.getWorld().setBlockState(pos, Blocks.WHITE_CONCRETE.getDefaultState());
         }
+        visited = false;
     }
 }

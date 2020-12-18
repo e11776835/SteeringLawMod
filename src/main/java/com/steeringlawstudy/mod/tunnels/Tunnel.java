@@ -1,5 +1,6 @@
 package com.steeringlawstudy.mod.tunnels;
 
+import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.util.SegmentType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -14,6 +15,7 @@ public class Tunnel {
     public String name;
     private World world;
     private HashMap<String, Segment> list = new HashMap<>();
+    public Segment start, stop;
 
     public Tunnel(String n, World w) {
         name = n;
@@ -26,6 +28,12 @@ public class Tunnel {
     public void add(BlockPos pos, SegmentType type) {
         Segment s = new Segment(pos, type, this);
         list.put(TunnelManager.getSegmentName(pos), s);
+
+        if (type == SegmentType.START) {
+            start = s;
+        } else if (type == SegmentType.STOP) {
+            stop = s;
+        }
     }
 
     /**
@@ -35,8 +43,30 @@ public class Tunnel {
         return list.containsKey(segmentName);
     }
 
+    /**
+     * sets targeted block to visited; also keeps track if tunnel is finished / has to be restarted
+     */
     public void setVisited(String segmentName) {
-        list.get(segmentName).setVisited();
+        Segment s = list.get(segmentName);
+
+        if (s.getType() == SegmentType.START) {
+            reset();
+            s.setVisited();
+            start.setVisited();
+            //SteeringLawStudy.LOGGER.info("now starting tunnel");
+        } else if (start.wasVisited()) {
+            s.setVisited();
+        }
+
+        if (s.getType() == SegmentType.STOP) {
+            list.forEach((name, segment) -> {
+                if (!segment.wasVisited()) return;
+            });
+
+            // TODO mark tunnel as finished here
+            reset();
+            //SteeringLawStudy.LOGGER.info("now tunnel is finished");
+        }
     }
 
     public SegmentType getType(String segmentName) {

@@ -1,5 +1,6 @@
 package com.steeringlawstudy.mod.tunnels;
 
+import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.util.SegmentType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -11,14 +12,15 @@ import java.util.HashMap;
  */
 public class TunnelManager {
     public static HashMap<String, Tunnel> list = new HashMap<>();
+    public static boolean found = false;
 
     /**
      * handles all considering the tunnels, called within ClientEvents.getTargetBlock
-     *
      * @param pos of targeted block
      */
     public static void manage(BlockPos pos, World world) {
         String segmentName = TunnelManager.getSegmentName(pos);
+        found = false;
 
         if (list.isEmpty()) {
             // HARDCODED FOR TESTING
@@ -44,16 +46,19 @@ public class TunnelManager {
             list.put(tunnel.name, tunnel);
         }
 
-        // search current pos, set it visited if its a path segment
+        // search current pos, set it visited
         list.forEach((name, tunnel) -> {
-            if (tunnel.checkFor(segmentName) && tunnel.getType(segmentName) == SegmentType.PATH) {
+            if (tunnel.checkFor(segmentName)) {
                 tunnel.setVisited(segmentName);
-                return;
-            } else {
-                // in the case that the pos belongs to no tunnel --> pos is out of bounds, reset tunnels
-                tunnel.reset();
+                found = true;
             }
         });
+
+        // targeted block not part of tunnel --> reset tunnel
+        if (!found) {
+            list.forEach((name, tunnel) -> tunnel.reset());
+            //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
+        }
     }
 
     /**

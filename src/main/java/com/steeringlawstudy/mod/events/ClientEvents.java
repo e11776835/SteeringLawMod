@@ -75,7 +75,6 @@ public class ClientEvents {
     @SubscribeEvent
     public static void validateDataOnExit(PlayerEvent.PlayerLoggedOutEvent event) {
         SteeringLawStudy.LOGGER.info("starting data parsing");
-        // TODO SteeringLawStudy.LOGGER.info(list.toString());
         DataValidator.parseData();
         SteeringLawStudy.LOGGER.info("parse completed");
     }
