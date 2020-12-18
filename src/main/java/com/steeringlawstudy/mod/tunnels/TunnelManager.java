@@ -1,7 +1,6 @@
 package com.steeringlawstudy.mod.tunnels;
 
-import com.steeringlawstudy.mod.SteeringLawStudy;
-import com.steeringlawstudy.mod.util.SegmentType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -18,13 +17,13 @@ public class TunnelManager {
      * handles all considering the tunnels, called within ClientEvents.getTargetBlock
      * @param pos of targeted block
      */
-    public static void manage(BlockPos pos, World world) {
+    public static void manage(BlockPos pos, World world, LivingEntity player) {
         String segmentName = TunnelManager.getSegmentName(pos);
         found = false;
 
         if (list.isEmpty()) {
             // HARDCODED FOR TESTING
-            Tunnel tunnel = new Tunnel("test", world);
+            Tunnel tunnel = new Tunnel("test", world, player);
             tunnel.add(new BlockPos(-305, 89, 316), SegmentType.START);
             tunnel.add(new BlockPos(-306, 89, 316), SegmentType.PATH);
             tunnel.add(new BlockPos(-307, 89, 316), SegmentType.PATH);
@@ -58,6 +57,7 @@ public class TunnelManager {
         if (!found) {
             list.forEach((name, tunnel) -> tunnel.reset());
             //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
+            // TODO: error sound / feedback
         }
     }
 

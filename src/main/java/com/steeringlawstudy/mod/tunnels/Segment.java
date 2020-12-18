@@ -1,6 +1,5 @@
 package com.steeringlawstudy.mod.tunnels;
 
-import com.steeringlawstudy.mod.util.SegmentType;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
@@ -39,6 +38,10 @@ public class Segment {
 
     public SegmentType getType() {
         return type;
+    }
+
+    public BlockPos getPos() {
+        return pos;
     }
 
     public void reset() {

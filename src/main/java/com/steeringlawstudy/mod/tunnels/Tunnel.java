@@ -1,7 +1,9 @@
 package com.steeringlawstudy.mod.tunnels;
 
-import com.steeringlawstudy.mod.SteeringLawStudy;
-import com.steeringlawstudy.mod.util.SegmentType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -14,12 +16,14 @@ public class Tunnel {
     // TODO: EINDEUTIGE ID
     public String name;
     private World world;
+    private LivingEntity player;
     private HashMap<String, Segment> list = new HashMap<>();
     public Segment start, stop;
 
-    public Tunnel(String n, World w) {
+    public Tunnel(String n, World w, LivingEntity p) {
         name = n;
         world = w;
+        player = p;
     }
 
     /**
@@ -64,8 +68,9 @@ public class Tunnel {
             });
 
             // TODO mark tunnel as finished here
-            reset();
+            start.reset();
             //SteeringLawStudy.LOGGER.info("now tunnel is finished");
+            world.playSound((PlayerEntity) player, s.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.MASTER, 100, 0);
         }
     }
 

@@ -65,7 +65,7 @@ public class ClientEvents {
             // player.sendMessage(mcText, player.getUniqueID());
 
             // give coordinates of targeted block to TunnelManager
-            TunnelManager.manage(pos, world);
+            TunnelManager.manage(pos, world, player);
         }
     }
 
