@@ -14,6 +14,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -66,6 +67,24 @@ public class ClientEvents {
 
             // give coordinates of targeted block to TunnelManager
             TunnelManager.manage(pos, world, player);
+        }
+    }
+
+    /**
+     * disables player movement
+     * moves player from position to position automatically (left = previous pos, right = next pos)
+     */
+    @SubscribeEvent
+    public static void teleportPlayer(InputUpdateEvent event) {
+        float currMoveStrafe = event.getMovementInput().moveStrafe;
+
+        // disable player movement
+        // event.getPlayer().setVelocity(0, 0, 0);
+        // event.getMovementInput().moveStrafe = 0;
+        // event.getMovementInput().moveForward = 0;
+
+        if (currMoveStrafe != 0) {
+            TunnelManager.teleportPlayer(event);
         }
     }
 

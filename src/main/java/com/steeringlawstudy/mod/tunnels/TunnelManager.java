@@ -6,7 +6,9 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.InputUpdateEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -17,6 +19,10 @@ public class TunnelManager {
     public static World world;
     public static LivingEntity player;
     public static boolean found, started;
+
+    private static ArrayList<BlockPos> availablePlayerLocations = new ArrayList<>();
+    private static BlockPos currentPlayerLocation;
+    private static int currentIndex;
 
     /**
      * handles all considering the tunnels, called within ClientEvents.getTargetBlock
@@ -94,5 +100,46 @@ public class TunnelManager {
             //SteeringLawStudy.LOGGER.info("now tunnel is finished");
             world.playSound((PlayerEntity) player, t.start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.MASTER, 100, 0);
         }
+    }
+
+    public static void teleportPlayer(InputUpdateEvent event) {
+        boolean goingLeft = event.getMovementInput().leftKeyDown;
+        boolean goingRight = event.getMovementInput().rightKeyDown;
+        PlayerEntity player = event.getPlayer();
+
+        if (availablePlayerLocations.isEmpty()) {
+            // HARDCODED FOR TESTING
+            currentPlayerLocation = new BlockPos(player.getPositionVec());
+
+            availablePlayerLocations.add(currentPlayerLocation);
+            availablePlayerLocations.add(new BlockPos(-305, 90, 330));
+            availablePlayerLocations.add(new BlockPos(-305, 90, 340));
+            availablePlayerLocations.add(new BlockPos(-305, 90, 350));
+        }
+
+        currentIndex = availablePlayerLocations.indexOf(currentPlayerLocation);
+
+        // determine next index depending on input
+        if (goingLeft) {
+            if (currentIndex == 0) {
+                currentIndex = availablePlayerLocations.size() - 1;
+            } else {
+                currentIndex = currentIndex - 1;
+            }
+
+        } else if (goingRight) {
+            if (currentIndex == availablePlayerLocations.size() - 1) {
+                currentIndex = 0;
+            } else {
+                currentIndex = currentIndex + 1;
+            }
+        }
+
+        currentPlayerLocation = availablePlayerLocations.get(currentIndex);
+        player.setRawPosition(
+                currentPlayerLocation.getX(),
+                currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ()
+        );
     }
 }
