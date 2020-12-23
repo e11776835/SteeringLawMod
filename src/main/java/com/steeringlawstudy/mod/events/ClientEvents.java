@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = SteeringLawStudy.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ClientEvents {
     private static BlockPos lastTargetPos;
+    private static int teleportCooldown;
 
     /**
      * while holding a food item, the targeted block is recorded
@@ -37,14 +38,13 @@ public class ClientEvents {
         if (!world.isRemote) return;
 
         LivingEntity player = event.getEntityLiving();
+        if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
 
         // if food is held, target blocks are recorded.. otherwise abort
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
 
         // only execute if target is a block, not an entity
         if (Minecraft.getInstance().objectMouseOver.getClass() == EntityRayTraceResult.class) return;
-
-        if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
 
         BlockRayTraceResult lookingAt = (BlockRayTraceResult) Minecraft.getInstance().objectMouseOver;
 
@@ -78,12 +78,16 @@ public class ClientEvents {
     public static void teleportPlayer(InputUpdateEvent event) {
         float currMoveStrafe = event.getMovementInput().moveStrafe;
 
-        // disable player movement
-        // event.getPlayer().setVelocity(0, 0, 0);
-        // event.getMovementInput().moveStrafe = 0;
-        // event.getMovementInput().moveForward = 0;
+        if (teleportCooldown > 0) teleportCooldown--;
 
-        if (currMoveStrafe != 0) {
+        // disable player movement
+        event.getPlayer().setVelocity(0, 0, 0);
+        event.getMovementInput().moveStrafe = 0;
+        event.getMovementInput().moveForward = 0;
+
+        if (currMoveStrafe != 0 && teleportCooldown == 0) {
+            // 10 ticks cooldown = 0.5 sec.
+            teleportCooldown = 10;
             TunnelManager.teleportPlayer(event);
         }
     }

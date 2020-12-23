@@ -131,6 +131,14 @@ public class DataValidator {
                     } else {
                         // log last open position in targeted blocks
                         tick = lastTick.plusNanos(50000000);
+
+                        if (!lastBlock.equals(START_BLOCK) &&
+                                !lastBlock.equals(STOP_BLOCK) &&
+                                !lastBlock.equals(PATH_VISITED_BLOCK) &&
+                                !lastBlock.equals(PATH_BLOCK)) {
+                            lastBlock = "out of bounds";
+                        }
+
                         timeSpent = timeSpent + ChronoUnit.MICROS.between(lastTick, tick);
                         out.println(tick + " " + lastBlock + "\t" +
                                 TimeUnit.MILLISECONDS.convert(timeSpent, TimeUnit.MICROSECONDS));

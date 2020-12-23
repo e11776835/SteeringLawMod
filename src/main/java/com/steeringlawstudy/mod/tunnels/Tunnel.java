@@ -10,12 +10,13 @@ import java.util.HashMap;
  * tunnel for steering law experiments, contains all segments from start to finish
  */
 public class Tunnel {
-    // TODO: EINDEUTIGE ID
+    // UNIQUE name = BlockPos of START-BLOCK
     public String name;
     private World world;
     private LivingEntity player;
     public HashMap<String, Segment> list = new HashMap<>();
     public Segment start, stop;
+    public BlockPos playerStart;
 
     public Tunnel(String n, World w, LivingEntity p) {
         name = n;

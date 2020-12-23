@@ -20,44 +20,64 @@ public class TunnelManager {
     public static LivingEntity player;
     public static boolean found, started;
 
-    private static ArrayList<BlockPos> availablePlayerLocations = new ArrayList<>();
+    private static HashMap<String, ArrayList<BlockPos>> availableCameraAngles = new HashMap<>();
     private static BlockPos currentPlayerLocation;
-    private static int currentIndex;
+    private static int currentCameraIndex;
+    private static String currentTunnel;
+
+    /**
+     * Registers all tunnels and their cameraAngles to data structures
+     */
+    public static void init() {
+        // TUNNELS
+        BlockPos start = new BlockPos(-305, 89, 316);
+        currentTunnel = TunnelManager.getSegmentName(start);
+        Tunnel tunnel = new Tunnel(currentTunnel, world, player);
+        tunnel.add(start, SegmentType.START);
+        tunnel.add(new BlockPos(-306, 89, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-307, 89, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-307, 90, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-307, 91, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-307, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-306, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-305, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-304, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-303, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-302, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-301, 92, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-301, 91, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-301, 90, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-301, 89, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-302, 89, 316), SegmentType.PATH);
+        tunnel.add(new BlockPos(-303, 89, 316), SegmentType.STOP);
+
+        list.put(tunnel.name, tunnel);
+
+        // PLAYER POSITIONS
+        currentPlayerLocation = new BlockPos(player.getPositionVec());
+
+        availableCameraAngles.put(currentTunnel, new ArrayList<BlockPos>());
+        availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 90, 330));
+        availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 90, 340));
+        availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 95, 350));
+
+        tunnel.playerStart = currentPlayerLocation;
+    }
 
     /**
      * handles all considering the tunnels, called within ClientEvents.getTargetBlock
-     *
      * @param pos of targeted block
+     * @param w World
+     * @param p Player
      */
     public static void manage(BlockPos pos, World w, LivingEntity p) {
-        String segmentName = TunnelManager.getSegmentName(pos);
+        String segmentName = getSegmentName(pos);
         found = false;
 
         if (list.isEmpty()) {
             player = p;
             world = w;
-
-            // HARDCODED FOR TESTING
-            Tunnel tunnel = new Tunnel("test", w, p);
-            tunnel.add(new BlockPos(-305, 89, 316), SegmentType.START);
-            tunnel.add(new BlockPos(-306, 89, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-307, 89, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-307, 90, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-307, 91, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-307, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-306, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-305, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-304, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-303, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-302, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-301, 92, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-301, 91, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-301, 90, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-301, 89, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-302, 89, 316), SegmentType.PATH);
-            tunnel.add(new BlockPos(-303, 89, 316), SegmentType.STOP);
-
-            list.put(tunnel.name, tunnel);
+            init();
         }
 
         // search current pos, set it visited
@@ -76,7 +96,7 @@ public class TunnelManager {
             list.forEach((name, tunnel) -> tunnel.reset());
             //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
             started = false;
-            world.playSound((PlayerEntity) player, list.get("test").start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.MASTER, 100, 0);
+            world.playSound((PlayerEntity) player, list.get(currentTunnel).start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.MASTER, 100, 0);
         }
     }
 
@@ -102,40 +122,35 @@ public class TunnelManager {
         }
     }
 
+    /**
+     * Changes camera angle of each tunnel with A/D
+     * TODO add change tunnel with W/S
+     */
     public static void teleportPlayer(InputUpdateEvent event) {
         boolean goingLeft = event.getMovementInput().leftKeyDown;
         boolean goingRight = event.getMovementInput().rightKeyDown;
         PlayerEntity player = event.getPlayer();
 
-        if (availablePlayerLocations.isEmpty()) {
-            // HARDCODED FOR TESTING
-            currentPlayerLocation = new BlockPos(player.getPositionVec());
+        // CAUTION: right now, this REQUIRES startingPos of player in world to be a known camera angle
+        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(currentPlayerLocation);
 
-            availablePlayerLocations.add(currentPlayerLocation);
-            availablePlayerLocations.add(new BlockPos(-305, 90, 330));
-            availablePlayerLocations.add(new BlockPos(-305, 90, 340));
-            availablePlayerLocations.add(new BlockPos(-305, 90, 350));
-        }
-
-        currentIndex = availablePlayerLocations.indexOf(currentPlayerLocation);
-
-        // determine next index depending on input
+        // determine next cameraIndex depending on input
         if (goingLeft) {
-            if (currentIndex == 0) {
-                currentIndex = availablePlayerLocations.size() - 1;
+            if (currentCameraIndex == 0) {
+                currentCameraIndex = availableCameraAngles.get(currentTunnel).size() - 1;
             } else {
-                currentIndex = currentIndex - 1;
+                currentCameraIndex = currentCameraIndex - 1;
             }
 
         } else if (goingRight) {
-            if (currentIndex == availablePlayerLocations.size() - 1) {
-                currentIndex = 0;
+            if (currentCameraIndex == availableCameraAngles.get(currentTunnel).size() - 1) {
+                currentCameraIndex = 0;
             } else {
-                currentIndex = currentIndex + 1;
+                currentCameraIndex = currentCameraIndex + 1;
             }
         }
 
-        currentPlayerLocation = availablePlayerLocations.get(currentIndex);
+        currentPlayerLocation = availableCameraAngles.get(currentTunnel).get(currentCameraIndex);
         player.setRawPosition(
                 currentPlayerLocation.getX(),
                 currentPlayerLocation.getY(),
