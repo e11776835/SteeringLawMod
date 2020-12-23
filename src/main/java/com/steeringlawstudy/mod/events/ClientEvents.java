@@ -7,6 +7,7 @@ import com.steeringlawstudy.mod.util.PosHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Hand;
+import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -15,7 +16,6 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -33,12 +33,13 @@ public class ClientEvents {
      * this will enable verification of user movement through paths
      */
     @SubscribeEvent
-    public static void getTargetBlock(LivingEvent.LivingUpdateEvent event) {
+    public static void getTargetBlock(PlayerEvent.LivingUpdateEvent event) {
         World world = event.getEntity().getEntityWorld();
         if (!world.isRemote) return;
+        if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
 
         LivingEntity player = event.getEntityLiving();
-        if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
+        // player.getName().getString() = Dev;
 
         // if food is held, target blocks are recorded.. otherwise abort
         if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
@@ -54,7 +55,8 @@ public class ClientEvents {
         }
 
         BlockPos pos = PosHelper.fixCoords(lookingAt);
-        String blockName = world.getBlockState(pos).getBlock().getTranslationKey();
+        // as of now, this cuts out the block.minecraft.; does not yet account for other modpacks
+        String blockName = world.getBlockState(pos).getBlock().getTranslationKey().substring(16);
 
         // only record if target block changes
         if (!PosHelper.isPosEqual(lastTargetPos, pos)) {
@@ -78,27 +80,33 @@ public class ClientEvents {
     @SubscribeEvent
     public static void teleportPlayer(InputUpdateEvent event) {
         if (!SteeringLawStudy.DEV_MODE) {
-            float currMoveStrafe = event.getMovementInput().moveStrafe;
-            float currMoveForward = event.getMovementInput().moveForward;
+            LivingEntity player = event.getPlayer();
+            MovementInput input = event.getMovementInput();
+            float currMoveStrafe = input.moveStrafe;
+            float currMoveForward = input.moveForward;
 
             if (teleportCooldown > 0) teleportCooldown--;
 
             // override player movement...
-            event.getPlayer().setVelocity(0, 0, 0);
-            event.getMovementInput().moveStrafe = 0;
-            event.getMovementInput().moveForward = 0;
+            player.setVelocity(0, 0, 0);
+            input.moveStrafe = 0;
+            input.moveForward = 0;
+            player.setJumping(false);
+            player.setSneaking(false);
+            player.setSprinting(false);
 
             // ...and enable teleport functionality
-            if (currMoveStrafe != 0 && teleportCooldown == 0) {
-                // 10 ticks cooldown = 0.5 sec.
-                teleportCooldown = 10;
-                TunnelManager.changeCameraAngle(event);
-            } else if (currMoveForward != 0 && teleportCooldown == 0) {
+            if (teleportCooldown == 0) {
+                if (currMoveStrafe != 0) {
+                    TunnelManager.changeCameraAngle(event);
                     // 10 ticks cooldown = 0.5 sec.
                     teleportCooldown = 10;
-                    // TODO: IMPLEMENT THIS
+                } else if (currMoveForward != 0) {
                     TunnelManager.changeTunnel(event);
+                    // 10 ticks cooldown = 0.5 sec.
+                    teleportCooldown = 10;
                 }
+            }
         }
     }
 
@@ -110,5 +118,15 @@ public class ClientEvents {
         SteeringLawStudy.LOGGER.info("starting data parsing");
         DataValidator.parseData();
         SteeringLawStudy.LOGGER.info("parse completed");
+    }
+
+    /**
+     * initializes TunnelManager
+     */
+    @SubscribeEvent
+    public static void initTunnelManager(PlayerEvent.PlayerLoggedInEvent event) {
+        SteeringLawStudy.LOGGER.info("starting tunnel initialization");
+        TunnelManager.init(event.getPlayer(), event.getPlayer().world);
+        SteeringLawStudy.LOGGER.info("initialization completed");
     }
 }

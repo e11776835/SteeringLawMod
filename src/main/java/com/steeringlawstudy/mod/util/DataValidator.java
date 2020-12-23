@@ -58,7 +58,9 @@ public class DataValidator {
                 String line = in.nextLine();
                 String lastLine = "";
                 String block = "";
+                String pos = "";
                 String lastBlock = "";
+                String lastPos = "";
                 String outputText = "";
                 LocalTime tick;
                 LocalTime lastTick = null;
@@ -70,13 +72,14 @@ public class DataValidator {
                 boolean running = true;
 
                 // go through log file and parse relevant data..
-                out.println("===[tick]=== ===[status]=== =[ms]=");
+                out.println("===[tick]=== ===[status]=== =====[pos]===== =[ms]=");
 
                 while (running) {
                     // only read lines containing the keyword "trgt"
-                    if (line.lastIndexOf("trgt") > -1) {
+                    if (line.contains("trgt")) {
                         statusChanged = false;
-                        block = line.substring(line.lastIndexOf("trgt") + 21);
+                        block = line.substring(line.lastIndexOf("trgt") + 5, line.lastIndexOf("[") - 1);
+                        pos = line.substring(line.lastIndexOf("["));
                         tick = LocalTime.parse(line.substring(11, 23));
 
                         // get start time
@@ -96,11 +99,10 @@ public class DataValidator {
                             if (outOfBounds) {
                                 outOfBounds = false;
                                 statusChanged = true;
-                                outputText = "out of bounds";
+                                outputText = "out of bounds \t\t\t\t";
                             } else {
-                                // != did not work
-                                if (!block.equalsIgnoreCase(lastBlock)) {
-                                    outputText = lastBlock;
+                                if (!block.equalsIgnoreCase(lastBlock) || !pos.equalsIgnoreCase(lastPos)) {
+                                    outputText = lastBlock + "\t" + lastPos;
                                     statusChanged = true;
                                 }
                             }
@@ -108,7 +110,7 @@ public class DataValidator {
                             if (!outOfBounds) {
                                 outOfBounds = true;
                                 statusChanged = true;
-                                outputText = lastBlock;
+                                outputText = lastBlock + "\t" + lastPos;
                             }
                         }
                         timeSpent += deltaTick;
@@ -122,6 +124,7 @@ public class DataValidator {
 
                         // prep for next line
                         lastBlock = block;
+                        lastPos = pos;
                         lastTick = tick;
                     }
 
@@ -136,7 +139,9 @@ public class DataValidator {
                                 !lastBlock.equals(STOP_BLOCK) &&
                                 !lastBlock.equals(PATH_VISITED_BLOCK) &&
                                 !lastBlock.equals(PATH_BLOCK)) {
-                            lastBlock = "out of bounds";
+                            lastBlock = "out of bounds \t\t\t\t";
+                        } else {
+                            lastBlock += "\t" + lastPos;
                         }
 
                         timeSpent = timeSpent + ChronoUnit.MICROS.between(lastTick, tick);

@@ -29,7 +29,7 @@ public class SteeringLawStudy {
     public static final Logger LOGGER = LogManager.getLogger();
 
     // in dev mode, the player can move freely; if disabled, mod functions normally
-    public static final boolean DEV_MODE = true;
+    public static final boolean DEV_MODE = false;
 
     // output path for study logfiles
     public static final String OUT_PATH = "../study";
