@@ -46,7 +46,7 @@ public class Tunnel {
     }
 
     /**
-     * sets targeted block to visited; also keeps track if tunnel is finished / has to be restarted
+     * sets targeted block to visited
      */
     public void setVisited(String segmentName) {
         Segment s = list.get(segmentName);
@@ -61,6 +61,13 @@ public class Tunnel {
         }
     }
 
+    /**
+     * resets visited path blocks back to standard path blocks
+     */
+    public void reset() {
+        list.forEach((name, segment) -> segment.reset());
+    }
+
     public SegmentType getType(String segmentName) {
         return list.get(segmentName).getType();
     }
@@ -69,10 +76,4 @@ public class Tunnel {
         return world;
     }
 
-    /**
-     * resets visited path blocks back to standard path blocks
-     */
-    public void reset() {
-        list.forEach((name, segment) -> segment.reset());
-    }
 }

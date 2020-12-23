@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * "main" class for the mod, this is where the mod registers itself to the game
+ * "main" class for the mod, this is where the mod registers itself to the game and defines global constants
  */
 @Mod("steeringlawstudy")
 public class SteeringLawStudy {
@@ -27,6 +27,9 @@ public class SteeringLawStudy {
 
     // Directly reference a log4j logger.
     public static final Logger LOGGER = LogManager.getLogger();
+
+    // in dev mode, the player can move freely; if disabled, mod functions normally
+    public static final boolean DEV_MODE = false;
 
     // output path for study logfiles
     public static final String OUT_PATH = "../study";

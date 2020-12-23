@@ -71,8 +71,9 @@ public class ClientEvents {
     }
 
     /**
-     * disables player movement
-     * moves player from position to position automatically (left = previous pos, right = next pos)
+     * overrides standard player movement
+     * moves player between tunnels (down = previous pos, up = next pos)
+     * moves player between camera angles (left = previous pos, right = next pos)
      */
     @SubscribeEvent
     public static void teleportPlayer(InputUpdateEvent event) {
@@ -80,11 +81,12 @@ public class ClientEvents {
 
         if (teleportCooldown > 0) teleportCooldown--;
 
-        // disable player movement
+            // override player movement...
         event.getPlayer().setVelocity(0, 0, 0);
         event.getMovementInput().moveStrafe = 0;
         event.getMovementInput().moveForward = 0;
 
+            // ...and enable teleport functionality
         if (currMoveStrafe != 0 && teleportCooldown == 0) {
             // 10 ticks cooldown = 0.5 sec.
             teleportCooldown = 10;

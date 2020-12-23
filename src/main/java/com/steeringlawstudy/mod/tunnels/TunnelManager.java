@@ -10,20 +10,21 @@ import net.minecraftforge.client.event.InputUpdateEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 /**
- * singleton manager of all steering law tunnels, interfaces with ClientEvents
+ * manager of all steering law tunnels, interfaces with ClientEvents
  */
 public class TunnelManager {
-    public static HashMap<String, Tunnel> list = new HashMap<>();
+    public static TreeMap<String, Tunnel> list = new TreeMap<>();
     public static World world;
     public static LivingEntity player;
     public static boolean found, started;
 
     private static HashMap<String, ArrayList<BlockPos>> availableCameraAngles = new HashMap<>();
-    private static BlockPos currentPlayerLocation;
     private static int currentCameraIndex;
     private static String currentTunnel;
+    private static BlockPos currentPlayerLocation;
 
     /**
      * Registers all tunnels and their cameraAngles to data structures
@@ -66,9 +67,11 @@ public class TunnelManager {
 
     /**
      * handles all considering the tunnels, called within ClientEvents.getTargetBlock
+     * checks if tunnel has to be restarted (and plays sound)
+     *
      * @param pos of targeted block
-     * @param w World
-     * @param p Player
+     * @param w   World
+     * @param p   Player
      */
     public static void manage(BlockPos pos, World w, LivingEntity p) {
         String segmentName = getSegmentName(pos);
@@ -101,7 +104,7 @@ public class TunnelManager {
     }
 
     /**
-     * @return name string for segment at position pos
+     * @return name string for tunnel segment (block) at position pos
      */
     public static String getSegmentName(BlockPos pos) {
         return "" + pos.getX() + "/" + pos.getY() + "/" + pos.getZ();
@@ -133,6 +136,7 @@ public class TunnelManager {
 
         // CAUTION: right now, this REQUIRES startingPos of player in world to be a known camera angle
         currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(currentPlayerLocation);
+        if (currentCameraIndex == -1) return;
 
         // determine next cameraIndex depending on input
         if (goingLeft) {

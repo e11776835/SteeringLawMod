@@ -4,7 +4,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * element of a steering law tunnel
+ * segment (block) of a steering law tunnel
  * can be start, stop or path
  */
 public class Segment {
