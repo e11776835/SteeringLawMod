@@ -28,8 +28,11 @@ public class TunnelManager {
 
     /**
      * Registers all tunnels and their cameraAngles to data structures
+     * TODO: automate this?!
      */
     public static void init() {
+        currentPlayerLocation = new BlockPos(player.getPositionVec());
+
         // TUNNELS
         BlockPos start = new BlockPos(-305, 89, 316);
         currentTunnel = TunnelManager.getSegmentName(start);
@@ -54,15 +57,20 @@ public class TunnelManager {
 
         list.put(tunnel.name, tunnel);
 
-        // PLAYER POSITIONS
-        currentPlayerLocation = new BlockPos(player.getPositionVec());
+        // TESTING
+        BlockPos start_2 = currentPlayerLocation.add(30, 0, 30);
+        Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world, player);
+        list.put(tunnel_2.name, tunnel_2);
 
+        // TUNNEL PLAYERSTARTS
+        tunnel.playerStart = new BlockPos(-305, 90, 330);
+        tunnel_2.playerStart = currentPlayerLocation;
+
+        // CAMERA ANGLES
         availableCameraAngles.put(currentTunnel, new ArrayList<BlockPos>());
         availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 90, 330));
         availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 90, 340));
         availableCameraAngles.get(currentTunnel).add(new BlockPos(-305, 95, 350));
-
-        tunnel.playerStart = currentPlayerLocation;
     }
 
     /**
@@ -99,7 +107,7 @@ public class TunnelManager {
             list.forEach((name, tunnel) -> tunnel.reset());
             //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
             started = false;
-            world.playSound((PlayerEntity) player, list.get(currentTunnel).start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.MASTER, 100, 0);
+            world.playSound((PlayerEntity) player, list.get(currentTunnel).start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, SoundCategory.MASTER, 100, 0);
         }
     }
 
@@ -126,10 +134,35 @@ public class TunnelManager {
     }
 
     /**
-     * Changes camera angle of each tunnel with A/D
-     * TODO add change tunnel with W/S
+     * Changes tunnel with W/S
      */
-    public static void teleportPlayer(InputUpdateEvent event) {
+    public static void changeTunnel(InputUpdateEvent event) {
+        boolean goingUp = event.getMovementInput().forwardKeyDown;
+        boolean goingDown = event.getMovementInput().backKeyDown;
+        PlayerEntity player = event.getPlayer();
+
+        // TODO: IMPLEMENT THIS
+
+        // determine next cameraIndex depending on input
+        if (goingUp) {
+            currentTunnel = list.higherEntry(currentTunnel).getKey();
+
+        } else if (goingDown) {
+            currentTunnel = list.lowerEntry(currentTunnel).getKey();
+        }
+
+        currentPlayerLocation = list.get(currentTunnel).playerStart;
+        player.setRawPosition(
+                currentPlayerLocation.getX(),
+                currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ()
+        );
+    }
+
+    /**
+     * Changes camera angle of each tunnel with A/D
+     */
+    public static void changeCameraAngle(InputUpdateEvent event) {
         boolean goingLeft = event.getMovementInput().leftKeyDown;
         boolean goingRight = event.getMovementInput().rightKeyDown;
         PlayerEntity player = event.getPlayer();

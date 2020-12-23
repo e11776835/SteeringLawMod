@@ -77,20 +77,28 @@ public class ClientEvents {
      */
     @SubscribeEvent
     public static void teleportPlayer(InputUpdateEvent event) {
-        float currMoveStrafe = event.getMovementInput().moveStrafe;
+        if (!SteeringLawStudy.DEV_MODE) {
+            float currMoveStrafe = event.getMovementInput().moveStrafe;
+            float currMoveForward = event.getMovementInput().moveForward;
 
-        if (teleportCooldown > 0) teleportCooldown--;
+            if (teleportCooldown > 0) teleportCooldown--;
 
             // override player movement...
-        event.getPlayer().setVelocity(0, 0, 0);
-        event.getMovementInput().moveStrafe = 0;
-        event.getMovementInput().moveForward = 0;
+            event.getPlayer().setVelocity(0, 0, 0);
+            event.getMovementInput().moveStrafe = 0;
+            event.getMovementInput().moveForward = 0;
 
             // ...and enable teleport functionality
-        if (currMoveStrafe != 0 && teleportCooldown == 0) {
-            // 10 ticks cooldown = 0.5 sec.
-            teleportCooldown = 10;
-            TunnelManager.teleportPlayer(event);
+            if (currMoveStrafe != 0 && teleportCooldown == 0) {
+                // 10 ticks cooldown = 0.5 sec.
+                teleportCooldown = 10;
+                TunnelManager.changeCameraAngle(event);
+            } else if (currMoveForward != 0 && teleportCooldown == 0) {
+                    // 10 ticks cooldown = 0.5 sec.
+                    teleportCooldown = 10;
+                    // TODO: IMPLEMENT THIS
+                    TunnelManager.changeTunnel(event);
+                }
         }
     }
 
