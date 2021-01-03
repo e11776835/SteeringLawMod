@@ -34,6 +34,26 @@ public class TunnelManager {
         player = p;
         world = w;
 
+        // Start and Stop pos for experiment
+        BlockPos pos_start = new BlockPos(153, 67, 1);
+        Tunnel startTunnel = new Tunnel(TunnelManager.getSegmentName(pos_start), world, player);
+        startTunnel.playerStart = pos_start;
+        availableCameraAngles.put(startTunnel.name, new ArrayList<>());
+        availableCameraAngles.get(startTunnel.name).add(startTunnel.playerStart);
+        list.put(startTunnel.name, startTunnel);
+
+        BlockPos pos_end = new BlockPos(304, 63, -33);
+        Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world, player);
+        endTunnel.playerStart = pos_end;
+        availableCameraAngles.put(endTunnel.name, new ArrayList<>());
+        availableCameraAngles.get(endTunnel.name).add(endTunnel.playerStart);
+        list.put(endTunnel.name, endTunnel);
+
+        // no matter where player enters world, currentTunnel/Camera/Location can't be null
+        currentTunnel = startTunnel.name;
+        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(startTunnel.playerStart);
+        currentPlayerLocation = startTunnel.playerStart;
+
         // TUNNELS
         BlockPos start = new BlockPos(190, 66, -6);
         Tunnel tunnel = new Tunnel(TunnelManager.getSegmentName(start), world, player);
@@ -110,11 +130,6 @@ public class TunnelManager {
         availableCameraAngles.get(tunnel_2.name).add(new BlockPos(270, 80, 44));
         availableCameraAngles.get(tunnel_3.name).add(new BlockPos(223, 66, 72));
         availableCameraAngles.get(tunnel_4.name).add(new BlockPos(247, 81, 120));
-
-        // no matter where player enters world, currentTunnel/Camera/Location can't be null
-        currentTunnel = tunnel.name;
-        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(tunnel.playerStart);
-        currentPlayerLocation = tunnel.playerStart;
     }
 
     /**
@@ -129,6 +144,7 @@ public class TunnelManager {
         String segmentName = getSegmentName(pos);
         found = false;
         player = p;
+        Tunnel t = list.get(currentTunnel);
 
         // search current pos, set it visited
         list.forEach((name, tunnel) -> {
@@ -146,8 +162,14 @@ public class TunnelManager {
             list.forEach((name, tunnel) -> tunnel.reset());
             //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
             started = false;
-            world.playSound((PlayerEntity) player, list.get(currentTunnel).start.getPos(),
-                    SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM, SoundCategory.MASTER, 100, 0);
+
+            if (!t.complete) {
+                world.playSound((PlayerEntity) player, t.start.getPos(),
+                        SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.MASTER, 90, 0);
+            } else {
+                t.start.reset();
+                t.complete = false;
+            }
         }
     }
 
@@ -157,16 +179,19 @@ public class TunnelManager {
     public static void changeTunnel(InputUpdateEvent event) {
         boolean goingUp = event.getMovementInput().forwardKeyDown;
         boolean goingDown = event.getMovementInput().backKeyDown;
+        boolean sound = false;
         PlayerEntity player = event.getPlayer();
 
         // determine next cameraIndex depending on input
         if (goingUp) {
             if (list.higherEntry(currentTunnel) != null) {
                 currentTunnel = list.higherEntry(currentTunnel).getKey();
+                sound = true;
             }
         } else if (goingDown) {
             if (list.lowerEntry(currentTunnel) != null) {
                 currentTunnel = list.lowerEntry(currentTunnel).getKey();
+                sound = true;
             }
         }
 
@@ -178,6 +203,10 @@ public class TunnelManager {
                 currentPlayerLocation.getZ()
         );
 
+        if (sound) {
+            world.playSound((PlayerEntity) player, currentPlayerLocation,
+                    SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 60, 1);
+        }
         // reset currentCameraIndex
         currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(list.get(currentTunnel).playerStart);
     }
@@ -215,6 +244,9 @@ public class TunnelManager {
                 currentPlayerLocation.getY(),
                 currentPlayerLocation.getZ()
         );
+
+        world.playSound((PlayerEntity) player, currentPlayerLocation,
+                SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 20, 1);
     }
 
     /**
@@ -233,9 +265,11 @@ public class TunnelManager {
                 if (!segment.wasVisited()) return;
             });
 
-            t.start.reset();
             //SteeringLawStudy.LOGGER.info("now tunnel is finished");
-            world.playSound((PlayerEntity) player, t.start.getPos(), SoundEvents.BLOCK_NOTE_BLOCK_BELL, SoundCategory.MASTER, 100, 0);
+            world.playSound((PlayerEntity) player, t.start.getPos(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+                    SoundCategory.MASTER, 90, 0);
+
+            t.complete = true;
         }
     }
 

@@ -63,9 +63,9 @@ public class ClientEvents {
             lastTargetPos = pos;
 
             StringTextComponent mcText = new StringTextComponent("trgt " + blockName +
-                    " [" + pos.getX() + "/" + pos.getY() + "/" + pos.getZ() + "]");
+                    " [" + pos.getX() + "/" + pos.getY() + "/" + pos.getZ() +
+                    "] plyr" + player.getPositionVec());
             SteeringLawStudy.LOGGER.info(mcText.getText());
-            // player.sendMessage(mcText, player.getUniqueID());
 
             // give coordinates of targeted block to TunnelManager
             TunnelManager.manage(pos, world, player);

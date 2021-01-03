@@ -17,6 +17,7 @@ public class Tunnel {
     public HashMap<String, Segment> list = new HashMap<>();
     public Segment start, stop;
     public BlockPos playerStart;
+    public boolean complete;
 
     public Tunnel(String n, World w, LivingEntity p) {
         name = n;
