@@ -35,40 +35,81 @@ public class TunnelManager {
         world = w;
 
         // TUNNELS
-        BlockPos start = new BlockPos(-305, 89, 316);
+        BlockPos start = new BlockPos(190, 66, -6);
         Tunnel tunnel = new Tunnel(TunnelManager.getSegmentName(start), world, player);
-        tunnel.playerStart = new BlockPos(-305, 90, 330);
+        tunnel.playerStart = new BlockPos(186, 65, -16);
+
         tunnel.add(start, SegmentType.START);
-        tunnel.add(new BlockPos(-306, 89, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-307, 89, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-307, 90, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-307, 91, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-307, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-306, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-305, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-304, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-303, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-302, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-301, 92, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-301, 91, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-301, 90, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-301, 89, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-302, 89, 316), SegmentType.PATH);
-        tunnel.add(new BlockPos(-303, 89, 316), SegmentType.STOP);
+        tunnel.add(new BlockPos(189, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(188, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(187, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(186, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(185, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(184, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(183, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(182, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(181, 66, -6), SegmentType.PATH);
+        tunnel.add(new BlockPos(180, 66, -6), SegmentType.STOP);
         list.put(tunnel.name, tunnel);
 
-        BlockPos start_2 = new BlockPos(-526, 72, -2042);
+        BlockPos start_2 = new BlockPos(272, 83, 61);
         Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world, player);
-        tunnel_2.playerStart = start_2;
+        tunnel_2.playerStart = new BlockPos(270, 80, 54);
+
+        tunnel_2.add(start_2, SegmentType.START);
+        tunnel_2.add(new BlockPos(271, 83, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(270, 83, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(269, 83, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(268, 83, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(268, 82, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(268, 81, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(268, 80, 61), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(268, 79, 61), SegmentType.STOP);
         list.put(tunnel_2.name, tunnel_2);
+
+        BlockPos start_3 = new BlockPos(222, 64, 80);
+        Tunnel tunnel_3 = new Tunnel(TunnelManager.getSegmentName(start_3), world, player);
+        tunnel_3.playerStart = new BlockPos(223, 66, 75);
+
+        tunnel_3.add(start_3, SegmentType.START);
+        tunnel_3.add(new BlockPos(222, 65, 80), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(222, 66, 80), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(222, 67, 80), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(222, 68, 80), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(222, 69, 80), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(222, 70, 80), SegmentType.STOP);
+        list.put(tunnel_3.name, tunnel_3);
+
+        BlockPos start_4 = new BlockPos(252, 82, 137);
+        Tunnel tunnel_4 = new Tunnel(TunnelManager.getSegmentName(start_4), world, player);
+        tunnel_4.playerStart = new BlockPos(248, 81, 130);
+
+        tunnel_4.add(start_4, SegmentType.START);
+        tunnel_4.add(new BlockPos(251, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(250, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(249, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(248, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(247, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(246, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(245, 82, 137), SegmentType.PATH);
+        tunnel_4.add(new BlockPos(244, 82, 137), SegmentType.STOP);
+        list.put(tunnel_4.name, tunnel_4);
 
         // CAMERA ANGLES
         availableCameraAngles.put(tunnel.name, new ArrayList<>());
         availableCameraAngles.put(tunnel_2.name, new ArrayList<>());
-        availableCameraAngles.get(tunnel_2.name).add(tunnel_2.playerStart);
+        availableCameraAngles.put(tunnel_3.name, new ArrayList<>());
+        availableCameraAngles.put(tunnel_4.name, new ArrayList<>());
+
         availableCameraAngles.get(tunnel.name).add(tunnel.playerStart);
-        availableCameraAngles.get(tunnel.name).add(new BlockPos(-305, 90, 340));
-        availableCameraAngles.get(tunnel.name).add(new BlockPos(-305, 95, 350));
+        availableCameraAngles.get(tunnel_2.name).add(tunnel_2.playerStart);
+        availableCameraAngles.get(tunnel_3.name).add(tunnel_3.playerStart);
+        availableCameraAngles.get(tunnel_4.name).add(tunnel_4.playerStart);
+
+        availableCameraAngles.get(tunnel.name).add(new BlockPos(186, 68, -24));
+        availableCameraAngles.get(tunnel_2.name).add(new BlockPos(270, 80, 44));
+        availableCameraAngles.get(tunnel_3.name).add(new BlockPos(223, 66, 72));
+        availableCameraAngles.get(tunnel_4.name).add(new BlockPos(247, 81, 120));
 
         // no matter where player enters world, currentTunnel/Camera/Location can't be null
         currentTunnel = tunnel.name;
@@ -122,14 +163,10 @@ public class TunnelManager {
         if (goingUp) {
             if (list.higherEntry(currentTunnel) != null) {
                 currentTunnel = list.higherEntry(currentTunnel).getKey();
-            } else {
-                currentTunnel = list.lowerEntry(currentTunnel).getKey();
             }
         } else if (goingDown) {
             if (list.lowerEntry(currentTunnel) != null) {
                 currentTunnel = list.lowerEntry(currentTunnel).getKey();
-            } else {
-                currentTunnel = list.higherEntry(currentTunnel).getKey();
             }
         }
 

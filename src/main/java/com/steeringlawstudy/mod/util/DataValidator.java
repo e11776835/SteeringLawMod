@@ -63,7 +63,7 @@ public class DataValidator {
                 String lastPos = "";
                 String outputText = "";
                 LocalTime tick;
-                LocalTime lastTick = null;
+                LocalTime lastTick = LocalTime.now();
                 long deltaTick = 0;
                 long timeSpent = 0;
                 boolean outOfBounds = true;
