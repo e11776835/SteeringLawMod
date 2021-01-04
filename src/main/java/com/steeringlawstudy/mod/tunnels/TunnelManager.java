@@ -164,7 +164,7 @@ public class TunnelManager {
             started = false;
 
             if (!t.complete) {
-                world.playSound((PlayerEntity) player, t.start.getPos(),
+                world.playSound((PlayerEntity) player, currentPlayerLocation,
                         SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.MASTER, 90, 0);
             } else {
                 t.start.reset();
@@ -245,8 +245,10 @@ public class TunnelManager {
                 currentPlayerLocation.getZ()
         );
 
-        world.playSound((PlayerEntity) player, currentPlayerLocation,
-                SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 20, 1);
+        if (availableCameraAngles.get(currentTunnel).size() > 1) {
+            world.playSound((PlayerEntity) player, currentPlayerLocation,
+                    SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 20, 1);
+        }
     }
 
     /**
@@ -266,10 +268,17 @@ public class TunnelManager {
             });
 
             //SteeringLawStudy.LOGGER.info("now tunnel is finished");
-            world.playSound((PlayerEntity) player, t.start.getPos(), SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
-                    SoundCategory.MASTER, 90, 0);
+            // to only trigger completion sound once
+            if (!t.complete) {
+                t.list.forEach((name, segment) -> {
+                    segment.setVisited();
+                });
 
-            t.complete = true;
+                world.playSound((PlayerEntity) player, currentPlayerLocation, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
+                        SoundCategory.MASTER, 90, 0);
+
+                t.complete = true;
+            }
         }
     }
 

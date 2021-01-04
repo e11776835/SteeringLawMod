@@ -5,7 +5,9 @@ import com.steeringlawstudy.mod.tunnels.TunnelManager;
 import com.steeringlawstudy.mod.util.DataValidator;
 import com.steeringlawstudy.mod.util.PosHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
@@ -17,8 +19,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+
+import java.awt.event.MouseEvent;
 
 /**
  * here certain events triggered by the player are handled
@@ -111,13 +116,18 @@ public class ClientEvents {
     }
 
     /**
-     * executes dataValidator when participant leaves testing world
+     * ignore clicking of player, preventing changes in the world
+     * TODO: Q / E / MIDDLE MOUSE
      */
     @SubscribeEvent
-    public static void validateDataOnExit(PlayerEvent.PlayerLoggedOutEvent event) {
-        SteeringLawStudy.LOGGER.info("starting data parsing");
-        DataValidator.parseData();
-        SteeringLawStudy.LOGGER.info("parse completed");
+    public static void ignoreStandardInput(PlayerInteractEvent event) {
+        if (!SteeringLawStudy.DEV_MODE) {
+            MouseHelper mh = Minecraft.getInstance().mouseHelper;
+
+            if (mh.isLeftDown() || mh.isMiddleDown() || mh.isRightDown()) {
+                if (event.isCancelable()) event.setCanceled(true);
+            }
+        }
     }
 
     /**
@@ -128,5 +138,15 @@ public class ClientEvents {
         SteeringLawStudy.LOGGER.info("starting tunnel initialization");
         TunnelManager.init(event.getPlayer(), event.getPlayer().world);
         SteeringLawStudy.LOGGER.info("initialization completed");
+    }
+
+    /**
+     * executes dataValidator when participant leaves testing world
+     */
+    @SubscribeEvent
+    public static void validateDataOnExit(PlayerEvent.PlayerLoggedOutEvent event) {
+        SteeringLawStudy.LOGGER.info("starting data parsing");
+        DataValidator.parseData();
+        SteeringLawStudy.LOGGER.info("parse completed");
     }
 }

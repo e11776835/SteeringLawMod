@@ -27,7 +27,7 @@ public class Segment {
 
     public void setVisited() {
         if (type == SegmentType.PATH) {
-            tunnel.getWorld().setBlockState(pos, Blocks.YELLOW_CONCRETE.getDefaultState());
+            tunnel.getWorld().setBlockState(pos, Blocks.LIGHT_GRAY_CONCRETE.getDefaultState());
         }
         visited = true;
     }
