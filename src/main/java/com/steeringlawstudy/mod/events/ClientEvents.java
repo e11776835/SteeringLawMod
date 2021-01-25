@@ -7,7 +7,6 @@ import com.steeringlawstudy.mod.util.PosHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Hand;
 import net.minecraft.util.MovementInput;
 import net.minecraft.util.math.BlockPos;
@@ -22,8 +21,6 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
-
-import java.awt.event.MouseEvent;
 
 /**
  * here certain events triggered by the player are handled
@@ -47,7 +44,7 @@ public class ClientEvents {
         // player.getName().getString() = Dev;
 
         // if food is held, target blocks are recorded.. otherwise abort
-        if (!player.getHeldItem(Hand.MAIN_HAND).getItem().isFood()) return;
+        if (!player.getHeldItem(Hand.OFF_HAND).getItem().isFood()) return;
 
         // only execute if target is a block, not an entity
         if (Minecraft.getInstance().objectMouseOver.getClass() == EntityRayTraceResult.class) return;
@@ -117,7 +114,8 @@ public class ClientEvents {
 
     /**
      * ignore clicking of player, preventing changes in the world
-     * TODO: Q / E / MIDDLE MOUSE
+     * Q / E / F / MIDDLE MOUSE are handled by remapping them to other keys in options..
+     * ..to prevent accidental usage
      */
     @SubscribeEvent
     public static void ignoreStandardInput(PlayerInteractEvent event) {

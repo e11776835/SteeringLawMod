@@ -53,7 +53,6 @@ public class DataValidator {
 
             try {
                 // connect to input file
-                // TODO: ADD PLAYER POS
                 Scanner in = new Scanner(new File("../run/logs/latest.log"));
                 PrintWriter out = new PrintWriter(log);
                 String line = in.nextLine();
@@ -102,7 +101,8 @@ public class DataValidator {
                                 statusChanged = true;
                                 outputText = "out of bounds \t\t\t\t";
                             } else {
-                                if (!block.equalsIgnoreCase(lastBlock) || !pos.equalsIgnoreCase(lastPos)) {
+                                // if (!block.equalsIgnoreCase(lastBlock) || !pos.equalsIgnoreCase(lastPos)) {
+                                if (!block.equalsIgnoreCase(lastBlock)) {
                                     outputText = lastBlock + "\t" + lastPos;
                                     statusChanged = true;
                                 }

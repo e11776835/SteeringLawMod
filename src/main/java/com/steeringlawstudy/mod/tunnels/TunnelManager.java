@@ -35,14 +35,14 @@ public class TunnelManager {
         world = w;
 
         // Start and Stop pos for experiment
-        BlockPos pos_start = new BlockPos(153, 67, 1);
+        BlockPos pos_start = new BlockPos(153, 67, 2);
         Tunnel startTunnel = new Tunnel(TunnelManager.getSegmentName(pos_start), world, player);
         startTunnel.playerStart = pos_start;
         availableCameraAngles.put(startTunnel.name, new ArrayList<>());
         availableCameraAngles.get(startTunnel.name).add(startTunnel.playerStart);
         list.put(startTunnel.name, startTunnel);
 
-        BlockPos pos_end = new BlockPos(304, 63, -33);
+        BlockPos pos_end = new BlockPos(305, 63, -33);
         Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world, player);
         endTunnel.playerStart = pos_end;
         availableCameraAngles.put(endTunnel.name, new ArrayList<>());
@@ -72,32 +72,32 @@ public class TunnelManager {
         tunnel.add(new BlockPos(180, 66, -6), SegmentType.STOP);
         list.put(tunnel.name, tunnel);
 
-        BlockPos start_2 = new BlockPos(272, 83, 61);
+        BlockPos start_2 = new BlockPos(222, 64, 80);
         Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world, player);
-        tunnel_2.playerStart = new BlockPos(270, 80, 54);
+        tunnel_2.playerStart = new BlockPos(223, 66, 75);
 
         tunnel_2.add(start_2, SegmentType.START);
-        tunnel_2.add(new BlockPos(271, 83, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(270, 83, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(269, 83, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(268, 83, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(268, 82, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(268, 81, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(268, 80, 61), SegmentType.PATH);
-        tunnel_2.add(new BlockPos(268, 79, 61), SegmentType.STOP);
+        tunnel_2.add(new BlockPos(222, 65, 80), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(222, 66, 80), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(222, 67, 80), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(222, 68, 80), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(222, 69, 80), SegmentType.PATH);
+        tunnel_2.add(new BlockPos(222, 70, 80), SegmentType.STOP);
         list.put(tunnel_2.name, tunnel_2);
 
-        BlockPos start_3 = new BlockPos(222, 64, 80);
+        BlockPos start_3 = new BlockPos(272, 83, 61);
         Tunnel tunnel_3 = new Tunnel(TunnelManager.getSegmentName(start_3), world, player);
-        tunnel_3.playerStart = new BlockPos(223, 66, 75);
+        tunnel_3.playerStart = new BlockPos(270, 80, 54);
 
         tunnel_3.add(start_3, SegmentType.START);
-        tunnel_3.add(new BlockPos(222, 65, 80), SegmentType.PATH);
-        tunnel_3.add(new BlockPos(222, 66, 80), SegmentType.PATH);
-        tunnel_3.add(new BlockPos(222, 67, 80), SegmentType.PATH);
-        tunnel_3.add(new BlockPos(222, 68, 80), SegmentType.PATH);
-        tunnel_3.add(new BlockPos(222, 69, 80), SegmentType.PATH);
-        tunnel_3.add(new BlockPos(222, 70, 80), SegmentType.STOP);
+        tunnel_3.add(new BlockPos(271, 83, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(270, 83, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(269, 83, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(268, 83, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(268, 82, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(268, 81, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(268, 80, 61), SegmentType.PATH);
+        tunnel_3.add(new BlockPos(268, 79, 61), SegmentType.STOP);
         list.put(tunnel_3.name, tunnel_3);
 
         BlockPos start_4 = new BlockPos(252, 82, 137);
@@ -126,10 +126,10 @@ public class TunnelManager {
         availableCameraAngles.get(tunnel_3.name).add(tunnel_3.playerStart);
         availableCameraAngles.get(tunnel_4.name).add(tunnel_4.playerStart);
 
-        availableCameraAngles.get(tunnel.name).add(new BlockPos(186, 68, -24));
-        availableCameraAngles.get(tunnel_2.name).add(new BlockPos(270, 80, 44));
-        availableCameraAngles.get(tunnel_3.name).add(new BlockPos(223, 66, 72));
-        availableCameraAngles.get(tunnel_4.name).add(new BlockPos(247, 81, 120));
+        availableCameraAngles.get(tunnel.name).add(new BlockPos(186, 65, -24));
+        availableCameraAngles.get(tunnel_2.name).add(new BlockPos(223, 66, 72));
+        availableCameraAngles.get(tunnel_3.name).add(new BlockPos(270, 80, 44));
+        availableCameraAngles.get(tunnel_4.name).add(new BlockPos(248, 81, 120));
     }
 
     /**
@@ -267,8 +267,7 @@ public class TunnelManager {
                 if (!segment.wasVisited()) return;
             });
 
-            //SteeringLawStudy.LOGGER.info("now tunnel is finished");
-            // to only trigger completion sound once
+            // only trigger completion sound once
             if (!t.complete) {
                 t.list.forEach((name, segment) -> {
                     segment.setVisited();
