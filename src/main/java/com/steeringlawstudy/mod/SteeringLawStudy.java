@@ -31,6 +31,9 @@ public class SteeringLawStudy {
     // in dev mode, the player can move freely; if disabled, mod functions normally
     public static final boolean DEV_MODE = false;
 
+    // number of completions needed per angle/tunnel
+    public static final int COMPLETIONS = 5;
+
     // output path for study logfiles
     public static final String OUT_PATH = "../study";
 
