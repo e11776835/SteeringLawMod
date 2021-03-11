@@ -41,7 +41,6 @@ public class ClientEvents {
         if (lastTargetPos == null) lastTargetPos = new BlockPos(0, 0, 0);
 
         LivingEntity player = event.getEntityLiving();
-        // player.getName().getString() = Dev;
 
         // if food is held, target blocks are recorded.. otherwise abort
         if (!player.getHeldItem(Hand.OFF_HAND).getItem().isFood()) return;

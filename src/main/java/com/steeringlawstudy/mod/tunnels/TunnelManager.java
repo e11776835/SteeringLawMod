@@ -1,15 +1,12 @@
 package com.steeringlawstudy.mod.tunnels;
 
 import com.steeringlawstudy.mod.SteeringLawStudy;
+import com.steeringlawstudy.mod.gui.TunnelGUI;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ItemParticleData;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -31,7 +28,7 @@ public class TunnelManager {
 
     private static HashMap<String, ArrayList<BlockPos>> availableCameraAngles = new HashMap<>();
     private static HashMap<String, ArrayList<Integer>> completionCount = new HashMap<>();
-    private static int currentCameraIndex;
+    private static int currentCameraIndex, currentTunnelIndex;
     private static String currentTunnel;
     private static BlockPos currentPlayerLocation;
 
@@ -44,7 +41,7 @@ public class TunnelManager {
 
         // Start and Stop pos for experiment
         BlockPos pos_start = new BlockPos(153, 67, 2);
-        Tunnel startTunnel = new Tunnel(TunnelManager.getSegmentName(pos_start), world, player);
+        Tunnel startTunnel = new Tunnel(TunnelManager.getSegmentName(pos_start), world);
         startTunnel.playerStart = pos_start;
         availableCameraAngles.put(startTunnel.name, new ArrayList<>());
         completionCount.put(startTunnel.name, new ArrayList<>());
@@ -52,7 +49,7 @@ public class TunnelManager {
         list.put(startTunnel.name, startTunnel);
 
         BlockPos pos_end = new BlockPos(305, 64, -31);
-        Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world, player);
+        Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world);
         endTunnel.playerStart = pos_end;
         availableCameraAngles.put(endTunnel.name, new ArrayList<>());
         completionCount.put(endTunnel.name, new ArrayList<>());
@@ -62,11 +59,12 @@ public class TunnelManager {
         // no matter where player enters world, currentTunnel/Camera/Location can't be null
         currentTunnel = startTunnel.name;
         currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(startTunnel.playerStart);
+        currentTunnelIndex = 0;
         currentPlayerLocation = startTunnel.playerStart;
 
         // TUNNELS
         BlockPos start = new BlockPos(190, 66, -6);
-        Tunnel tunnel = new Tunnel(TunnelManager.getSegmentName(start), world, player);
+        Tunnel tunnel = new Tunnel(TunnelManager.getSegmentName(start), world);
         tunnel.playerStart = new BlockPos(186, 65, -16);
 
         // tunnel 1: 7 wide, horizontal, angles: 10 blocks away, 18 blocks away
@@ -84,7 +82,7 @@ public class TunnelManager {
         list.put(tunnel.name, tunnel);
 
         BlockPos start_2 = new BlockPos(222, 64, 80);
-        Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world, player);
+        Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world);
         tunnel_2.playerStart = new BlockPos(223, 66, 75);
 
         // tunnel 2: 5 high, vertical, angles: 5 blocks away, 8 blocks away
@@ -98,7 +96,7 @@ public class TunnelManager {
         list.put(tunnel_2.name, tunnel_2);
 
         BlockPos start_3 = new BlockPos(272, 83, 61);
-        Tunnel tunnel_3 = new Tunnel(TunnelManager.getSegmentName(start_3), world, player);
+        Tunnel tunnel_3 = new Tunnel(TunnelManager.getSegmentName(start_3), world);
         tunnel_3.playerStart = new BlockPos(270, 80, 54);
 
         // tunnel 3: 4 wide hor., corner, 4 vertical, angles: 7 blocks away, 17 blocks away
@@ -114,7 +112,7 @@ public class TunnelManager {
         list.put(tunnel_3.name, tunnel_3);
 
         BlockPos start_4 = new BlockPos(253, 82, 137);
-        Tunnel tunnel_4 = new Tunnel(TunnelManager.getSegmentName(start_4), world, player);
+        Tunnel tunnel_4 = new Tunnel(TunnelManager.getSegmentName(start_4), world);
         tunnel_4.playerStart = new BlockPos(248, 81, 130);
 
         // tunnel 4: 9 wide, horizontal, angles: 7 blocks away, 17 blocks away
@@ -132,7 +130,7 @@ public class TunnelManager {
         list.put(tunnel_4.name, tunnel_4);
 
         BlockPos start_5 = new BlockPos(211, 81, 39);
-        Tunnel tunnel_5 = new Tunnel(TunnelManager.getSegmentName(start_5), world, player);
+        Tunnel tunnel_5 = new Tunnel(TunnelManager.getSegmentName(start_5), world);
         tunnel_5.playerStart = new BlockPos(209, 82, 35);
 
         // tunnel 5: 5 wide, corner, 5 high, angles: 4 blocks away, 6 blocks away
@@ -236,15 +234,17 @@ public class TunnelManager {
         boolean sound = false;
         PlayerEntity player = event.getPlayer();
 
-        // determine next cameraIndex depending on input
+        // determine next tunnel depending on input
         if (goingUp) {
             if (list.higherEntry(currentTunnel) != null) {
                 currentTunnel = list.higherEntry(currentTunnel).getKey();
+                currentTunnelIndex += 1;
                 sound = true;
             }
-        } else if (goingDown) {
+        } else if (goingDown && currentTunnelIndex > 0) {
             if (list.lowerEntry(currentTunnel) != null) {
                 currentTunnel = list.lowerEntry(currentTunnel).getKey();
+                currentTunnelIndex -= 1;
                 sound = true;
             }
         }
@@ -263,6 +263,9 @@ public class TunnelManager {
         }
         // reset currentCameraIndex
         currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(list.get(currentTunnel).playerStart);
+        TunnelGUI.currentTunnel = currentTunnelIndex;
+        TunnelGUI.currentAngle = currentCameraIndex + 1;
+        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
     }
 
     /**
@@ -291,6 +294,9 @@ public class TunnelManager {
                 currentCameraIndex = currentCameraIndex + 1;
             }
         }
+
+        TunnelGUI.currentAngle = currentCameraIndex + 1;
+        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
 
         currentPlayerLocation = availableCameraAngles.get(currentTunnel).get(currentCameraIndex);
         player.setRawPosition(
@@ -328,7 +334,7 @@ public class TunnelManager {
                 });
 
                 world.playSound((PlayerEntity) player, currentPlayerLocation, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
-                        SoundCategory.MASTER, 80, 0);
+                        SoundCategory.MASTER, 60, 0);
 
                 t.complete = true;
 
@@ -336,15 +342,25 @@ public class TunnelManager {
                 Integer counter = (Integer) countList.get(currentCameraIndex);
                 countList.set(currentCameraIndex, ++counter);
 
+                // shooting fireworks after completing an angle/tunnel
+                if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
+                    launchFireworks();
+                }
+            }
+        }
+    }
+
+    /**
+     * after a tunnel section is complete, launch fireworks
+     */
+    private static void launchFireworks() {
 /*
                 ParticleType type = ParticleTypes.FIREWORK;
                 IParticleData particleData = new ItemParticleData(type, new ItemStack(Items.ROSE_BUSH));
                 world.addParticle(particleData, currentPlayerLocation.getX(), currentPlayerLocation.getY(),
                         currentPlayerLocation.getZ() + 4, .5,.5,.5);
 */
-                // shooting fireworks after completing an angle/tunnel
-                if (counter >= SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
-                    ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
+        ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
 /*
                     CompoundNBT explosionNBT = new CompoundNBT();
                     CompoundNBT tagNBT = new CompoundNBT();
@@ -366,36 +382,31 @@ public class TunnelManager {
                     tagNBT.put("Fireworks", fireworksNBT);
                     firework.setTag(tagNBT);
 */
-                    FireworkRocketEntity rocket = new FireworkRocketEntity(world,
-                            currentPlayerLocation.getX() - 2, currentPlayerLocation.getY(),
-                            currentPlayerLocation.getZ() + 4, firework);
-                    FireworkRocketEntity rocket1 = new FireworkRocketEntity(world,
-                            currentPlayerLocation.getX() - 1, currentPlayerLocation.getY(),
-                            currentPlayerLocation.getZ() + 4, firework);
-                    FireworkRocketEntity rocket2 = new FireworkRocketEntity(world,
-                            currentPlayerLocation.getX(), currentPlayerLocation.getY(),
-                            currentPlayerLocation.getZ() + 4, firework);
-                    FireworkRocketEntity rocket3 = new FireworkRocketEntity(world,
-                            currentPlayerLocation.getX() + 1, currentPlayerLocation.getY(),
-                            currentPlayerLocation.getZ() + 4, firework);
-                    FireworkRocketEntity rocket4 = new FireworkRocketEntity(world,
-                            currentPlayerLocation.getX() + 2, currentPlayerLocation.getY(),
-                            currentPlayerLocation.getZ() + 4, firework);
+        FireworkRocketEntity rocket = new FireworkRocketEntity(world,
+                currentPlayerLocation.getX() - 2, currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ() + 4, firework);
+        FireworkRocketEntity rocket1 = new FireworkRocketEntity(world,
+                currentPlayerLocation.getX() - 1, currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ() + 4, firework);
+        FireworkRocketEntity rocket2 = new FireworkRocketEntity(world,
+                currentPlayerLocation.getX(), currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ() + 4, firework);
+        FireworkRocketEntity rocket3 = new FireworkRocketEntity(world,
+                currentPlayerLocation.getX() + 1, currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ() + 4, firework);
+        FireworkRocketEntity rocket4 = new FireworkRocketEntity(world,
+                currentPlayerLocation.getX() + 2, currentPlayerLocation.getY(),
+                currentPlayerLocation.getZ() + 4, firework);
 /*
                     rocketNBT.putInt("LifeTime", 20);
                     rocketNBT.putInt("Count", 5);
                     rocketNBT.put("FireworksItem", fireworksItemNBT);
                     rocket.writeAdditional(rocketNBT);
 */
-                    world.addEntity(rocket);
-                    world.addEntity(rocket1);
-                    world.addEntity(rocket2);
-                    world.addEntity(rocket3);
-                    world.addEntity(rocket4);
-                }
-            }
-        }
+        world.addEntity(rocket);
+        world.addEntity(rocket1);
+        world.addEntity(rocket2);
+        world.addEntity(rocket3);
+        world.addEntity(rocket4);
     }
-
-
 }

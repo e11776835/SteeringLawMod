@@ -1,9 +1,11 @@
 package com.steeringlawstudy.mod;
 
+import com.steeringlawstudy.mod.gui.TunnelGUI;
 import com.steeringlawstudy.mod.init.RegisterBlocks;
 import com.steeringlawstudy.mod.init.RegisterItems;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
@@ -46,5 +48,6 @@ public class SteeringLawStudy {
     public SteeringLawStudy() {
         RegisterItems.ITEMS.register(FMLJavaModLoadingContext.get().getModEventBus());
         RegisterBlocks.BLOCKS.register(FMLJavaModLoadingContext.get().getModEventBus());
+        MinecraftForge.EVENT_BUS.register(TunnelGUI.INSTANCE);
     }
 }

@@ -1,6 +1,5 @@
 package com.steeringlawstudy.mod.tunnels;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -13,16 +12,14 @@ public class Tunnel {
     // UNIQUE name = BlockPos of START-BLOCK
     public String name;
     private World world;
-    private LivingEntity player;
     public HashMap<String, Segment> list = new HashMap<>();
     public Segment start, stop;
     public BlockPos playerStart;
     public boolean complete;
 
-    public Tunnel(String n, World w, LivingEntity p) {
+    public Tunnel(String n, World w) {
         name = n;
         world = w;
-        player = p;
     }
 
     /**
