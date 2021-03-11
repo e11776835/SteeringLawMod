@@ -16,9 +16,14 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod("steeringlawstudy")
 public class SteeringLawStudy {
-    public static final String MOD_ID = "steeringlawstudy";
+    public static final boolean DEV_MODE = false;
+    public static final int COMPLETIONS = 5; // number of completions needed per angle/tunnel
+    public static final int NUM_TUNNELS = 6;
+    public static final String OUT_PATH = "../study"; // output path for study logfiles
 
-    // Creative Item Tab (own category for all the mods blocks/items in creative mode)
+    public static final String MOD_ID = "steeringlawstudy";
+    public static final Logger LOGGER = LogManager.getLogger();
+
     public static final ItemGroup TAB = new ItemGroup("modTab") {
         @Override
         // Tab icon
@@ -26,18 +31,6 @@ public class SteeringLawStudy {
             return new ItemStack(RegisterItems.RUBY.get());
         }
     };
-
-    // Directly reference a log4j logger.
-    public static final Logger LOGGER = LogManager.getLogger();
-
-    // in dev mode, the player can move freely; if disabled, mod functions normally
-    public static final boolean DEV_MODE = false;
-
-    // number of completions needed per angle/tunnel
-    public static final int COMPLETIONS = 5;
-
-    // output path for study logfiles
-    public static final String OUT_PATH = "../study";
 
     // block definitions
     public static final String START_BLOCK = "lime_concrete";

@@ -266,6 +266,7 @@ public class TunnelManager {
         TunnelGUI.currentTunnel = currentTunnelIndex;
         TunnelGUI.currentAngle = currentCameraIndex + 1;
         TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
+        TunnelGUI.progress = calculateCompletionPercentage();
     }
 
     /**
@@ -297,6 +298,7 @@ public class TunnelManager {
 
         TunnelGUI.currentAngle = currentCameraIndex + 1;
         TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
+        TunnelGUI.progress = calculateCompletionPercentage();
 
         currentPlayerLocation = availableCameraAngles.get(currentTunnel).get(currentCameraIndex);
         player.setRawPosition(
@@ -340,7 +342,9 @@ public class TunnelManager {
 
                 ArrayList countList = completionCount.get(t.name);
                 Integer counter = (Integer) countList.get(currentCameraIndex);
-                countList.set(currentCameraIndex, ++counter);
+                if (counter < SteeringLawStudy.COMPLETIONS) countList.set(currentCameraIndex, ++counter);
+
+                TunnelGUI.progress = calculateCompletionPercentage();
 
                 // shooting fireworks after completing an angle/tunnel
                 if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
@@ -408,5 +412,20 @@ public class TunnelManager {
         world.addEntity(rocket2);
         world.addEntity(rocket3);
         world.addEntity(rocket4);
+    }
+
+    /**
+     * @return completion % of currentTunnel for GUI
+     */
+    private static Float calculateCompletionPercentage() {
+        Float currentCompletions = 0f;
+
+        for (Integer count : completionCount.get(currentTunnel)) {
+            currentCompletions += count;
+        }
+
+        int completionsNeeded = availableCameraAngles.get(currentTunnel).size() * SteeringLawStudy.COMPLETIONS;
+
+        return currentCompletions / completionsNeeded * 100;
     }
 }

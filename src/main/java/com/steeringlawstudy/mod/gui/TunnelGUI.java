@@ -4,10 +4,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.gui.GuiUtils;
 
 public class TunnelGUI {
     public static final TunnelGUI INSTANCE = new TunnelGUI();
@@ -17,39 +15,79 @@ public class TunnelGUI {
     public static Integer currentNumAngles = 1;
     public static Float progress = 0f;
 
-    // private final ResourceLocation BAR = new ResourceLocation(SteeringLawStudy.MOD_ID, "bar.png");
-    // private final ResourceLocation BAR_BG = new ResourceLocation(SteeringLawStudy.MOD_ID, "bar_bg.png");
-    private final int w_tex = 0, h_tex = 0, w_gui = 100, h_gui = 10;
-
     @SubscribeEvent
     public void renderGUI(RenderGameOverlayEvent e) {
-        if (e.isCancelable() || e.getType() != RenderGameOverlayEvent.ElementType.TEXT) {
+        if (SteeringLawStudy.DEV_MODE || e.isCancelable() || e.getType() != RenderGameOverlayEvent.ElementType.TEXT) {
             return;
         }
+
+        // TODO ===== PROGRESS BAR
+        // private final ResourceLocation BAR = new ResourceLocation(SteeringLawStudy.MOD_ID, "bar.png");
+        // private static final int w_tex = 0, h_tex = 0, w_gui = 100, h_gui = 10;
+        // Minecraft.getInstance().textureManager.bindTexture(BAR);
+        // GuiUtils.drawTexturedModalRect(x + 8, y + 215, w_tex, h_tex, w_gui, h_gui, 0.2f);
 
         FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
         MatrixStack matrixStack = e.getMatrixStack();
 
-        int x = 180;
-        int y = 10;
+        int x = 175;
+        int y = 80;
 
-        // Minecraft.getInstance().textureManager.bindTexture(BAR);
-        GuiUtils.drawTexturedModalRect(x + 8, y + 215, w_tex, h_tex, w_gui, h_gui, 0.2f);
-
+        // START AREA
         if (currentTunnel == 0) {
-            fontRenderer.drawStringWithShadow(matrixStack, "Welcome! Use [W] and [S] to change location", x - 50, y, 0xffffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]", x - 50, y + 10, 0xffffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "PLEASE READ THIS BEFORE STARTING",
+                    x - 20, y, 0xff0000);
+            fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
+                    x - 21, y + 30, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]",
+                    x - 52, y + 40, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "Please help the pandas by tracing the white paths!",
+                    x - 52, y + 60, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "To complete your quest, trace the paths " +
+                            SteeringLawStudy.COMPLETIONS + " times from every angle.",
+                    x - 87, y + 70, 0xffffff);
+
+        } else if (currentTunnel == SteeringLawStudy.NUM_TUNNELS) {
+            // END AREA
+            fontRenderer.drawStringWithShadow(matrixStack, "CONGRATULATIONS! THE PANDAS ARE HAPPY!",
+                    x - 20, y, 0x00ff00);
 
         } else {
-            fontRenderer.drawStringWithShadow(matrixStack, "Tunnel", x, y, 0xffffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, currentTunnel.toString(), x + 35, y, 0xffffffff);
+            // REGULAR TUNNELS
+            x += 10;
+            y = 10;
 
-            fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0xffffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(), x + 90, y, 0xffffffff);
+            // LEVEL
+            fontRenderer.drawStringWithShadow(matrixStack, "Level", x, y, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, currentTunnel.toString(), x + 35, y, 0xffffff);
 
-            fontRenderer.drawStringWithShadow(matrixStack, "Progress:", x, y + 10, 0xffffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, progress.toString(), x + 58, y + 10, 0xffffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "%", x + 74, y + 10, 0xffffffff);
+            // ANGLE
+            fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
+                    x + 90, y, 0xffffff);
+
+
+            // PROGRESS
+            if (progress >= 100) {
+                fontRenderer.drawStringWithShadow(matrixStack, "LEVEL COMPLETE",
+                        x + 10, y + 10, 0x00ff00);
+            } else if (progress <= 0) {
+                fontRenderer.drawStringWithShadow(matrixStack, "Progress:",
+                        x + 10, y + 10, 0xffffff);
+                fontRenderer.drawStringWithShadow(matrixStack, " 0",
+                        x + 68, y + 10, 0xffffff);
+                fontRenderer.drawStringWithShadow(matrixStack, "%",
+                        x + 84, y + 10, 0xffffff);
+            } else {
+                fontRenderer.drawStringWithShadow(matrixStack, "Progress:",
+                        x + 10, y + 10, 0xffffff);
+                fontRenderer.drawStringWithShadow(matrixStack, progress.toString().substring(0, 2),
+                        x + 68, y + 10, 0xffffff);
+                fontRenderer.drawStringWithShadow(matrixStack, "%",
+                        x + 84, y + 10, 0xffffff);
+            }
         }
 
 
