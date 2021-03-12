@@ -48,7 +48,7 @@ public class TunnelManager {
         availableCameraAngles.get(startTunnel.name).add(startTunnel.playerStart);
         list.put(startTunnel.name, startTunnel);
 
-        BlockPos pos_end = new BlockPos(305, 64, -31);
+        BlockPos pos_end = new BlockPos(306, 64, -29);
         Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world);
         endTunnel.playerStart = pos_end;
         availableCameraAngles.put(endTunnel.name, new ArrayList<>());
@@ -198,6 +198,15 @@ public class TunnelManager {
         player = p;
         Tunnel t = list.get(currentTunnel);
 
+        // if tunnel was completed before (if previous target was STOP), reset tunnel
+        // TODO statt .reset() eine eigene effekt methode?
+        if (t.complete) {
+            list.forEach((name, tunnel) -> tunnel.reset());
+            started = false;
+            t.start.reset();
+            t.complete = false;
+        }
+
         // search current pos, set it visited
         list.forEach((name, tunnel) -> {
             if (tunnel.checkFor(segmentName)) {
@@ -262,10 +271,7 @@ public class TunnelManager {
         }
         // reset currentCameraIndex
         currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(list.get(currentTunnel).playerStart);
-        TunnelGUI.currentTunnel = currentTunnelIndex;
-        TunnelGUI.currentAngle = currentCameraIndex + 1;
-        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
-        TunnelGUI.progress = calculateCompletionPercentage();
+        updateGUIData();
     }
 
     /**
@@ -295,9 +301,7 @@ public class TunnelManager {
             }
         }
 
-        TunnelGUI.currentAngle = currentCameraIndex + 1;
-        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
-        TunnelGUI.progress = calculateCompletionPercentage();
+        updateGUIData();
 
         currentPlayerLocation = availableCameraAngles.get(currentTunnel).get(currentCameraIndex);
         player.setRawPosition(
@@ -320,7 +324,7 @@ public class TunnelManager {
     }
 
     /**
-     * Checks completion of Tunnel t, plays sound if fully completed
+     * Checks completion of Tunnel t and causes sound / firework
      */
     public static void checkCompletion(Tunnel t) {
         if (t.stop.wasVisited()) {
@@ -344,9 +348,9 @@ public class TunnelManager {
             Integer counter = (Integer) countList.get(currentCameraIndex);
             if (counter < SteeringLawStudy.COMPLETIONS) countList.set(currentCameraIndex, ++counter);
 
-            TunnelGUI.progress = calculateCompletionPercentage();
+            updateGUIData();
 
-            // shooting fireworks after completing an angle/tunnel
+            // shooting fireworks after completing an angle/tunnel _ times
             if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
                 launchFireworks();
             }
@@ -428,5 +432,24 @@ public class TunnelManager {
         int completionsNeeded = availableCameraAngles.get(currentTunnel).size() * SteeringLawStudy.COMPLETIONS;
 
         return currentCompletions / completionsNeeded * 100;
+    }
+
+    /**
+     * writes current values to TunnelGUI
+     */
+    private static void updateGUIData() {
+        TunnelGUI.currentTunnel = currentTunnelIndex;
+        TunnelGUI.currentAngle = currentCameraIndex + 1;
+
+        if (currentTunnelIndex > 0 && currentTunnelIndex < SteeringLawStudy.NUM_TUNNELS - 1) {
+            if (SteeringLawStudy.COMPLETIONS == completionCount.get(currentTunnel).get(currentCameraIndex)) {
+                TunnelGUI.currentAngleDone = true;
+            } else {
+                TunnelGUI.currentAngleDone = false;
+            }
+        }
+
+        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
+        TunnelGUI.progress = calculateCompletionPercentage();
     }
 }

@@ -12,6 +12,7 @@ public class TunnelGUI {
 
     public static Integer currentTunnel = 0;
     public static Integer currentAngle = 1;
+    public static boolean currentAngleDone = false;
     public static Integer currentNumAngles = 1;
     public static Float progress = 0f;
 
@@ -33,8 +34,8 @@ public class TunnelGUI {
         int x = 175;
         int y = 80;
 
-        // START AREA
         if (currentTunnel == 0) {
+            // START AREA
             fontRenderer.drawStringWithShadow(matrixStack, "PLEASE READ THIS BEFORE STARTING",
                     x - 20, y, 0xff0000);
             fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
@@ -58,38 +59,44 @@ public class TunnelGUI {
             x += 10;
             y = 10;
 
-            // LEVEL
-            fontRenderer.drawStringWithShadow(matrixStack, "Level", x, y, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, currentTunnel.toString(), x + 35, y, 0xffffff);
-
-            // ANGLE
-            fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
-                    x + 90, y, 0xffffff);
-
-
-            // PROGRESS
             if (progress >= 100) {
+                // LEVEL COMPLETE
                 fontRenderer.drawStringWithShadow(matrixStack, "LEVEL COMPLETE",
-                        x + 10, y + 10, 0x00ff00);
-            } else if (progress <= 0) {
-                fontRenderer.drawStringWithShadow(matrixStack, "Progress:",
-                        x + 10, y + 10, 0xffffff);
-                fontRenderer.drawStringWithShadow(matrixStack, " 0",
-                        x + 68, y + 10, 0xffffff);
-                fontRenderer.drawStringWithShadow(matrixStack, "%",
-                        x + 84, y + 10, 0xffffff);
+                        x + 10, y, 0x00ff00);
+
             } else {
+                // LEVEL PROGRESS
+                String progressString = "";
+                if (progress <= 0) {
+                    progressString = " 0";
+                } else {
+                    progressString = progress.toString().substring(0, 2);
+                }
+
                 fontRenderer.drawStringWithShadow(matrixStack, "Progress:",
                         x + 10, y + 10, 0xffffff);
-                fontRenderer.drawStringWithShadow(matrixStack, progress.toString().substring(0, 2),
+                fontRenderer.drawStringWithShadow(matrixStack, progressString,
                         x + 68, y + 10, 0xffffff);
                 fontRenderer.drawStringWithShadow(matrixStack, "%",
                         x + 84, y + 10, 0xffffff);
+
+                // LEVEL
+                fontRenderer.drawStringWithShadow(matrixStack, "Level", x, y, 0xffffff);
+                fontRenderer.drawStringWithShadow(matrixStack, currentTunnel.toString(), x + 35, y, 0xffffff);
+
+                // ANGLE
+                if (currentAngleDone) {
+                    fontRenderer.drawStringWithShadow(matrixStack, "ANGLE COMPLETE", x + 52, y, 0x00ff00);
+
+                } else {
+                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0xffffff);
+                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0xffffff);
+                    fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
+                            x + 90, y, 0xffffff);
+                }
+
             }
         }
-
 
     }
 }
