@@ -42,8 +42,8 @@ public class ClientEvents {
 
         LivingEntity player = event.getEntityLiving();
 
-        // if food is held, target blocks are recorded.. otherwise abort
-        if (!player.getHeldItem(Hand.OFF_HAND).getItem().isFood()) return;
+        // if bamboo is held, target blocks are recorded.. otherwise abort
+        if (!player.getHeldItem(Hand.OFF_HAND).getItem().getName().getString().equals("Bamboo")) return;
 
         // only execute if target is a block, not an entity
         if (Minecraft.getInstance().objectMouseOver.getClass() == EntityRayTraceResult.class) return;

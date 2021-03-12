@@ -19,8 +19,21 @@ build
 
 # other
 eclipse
-run
+
+# run
+backups
+crash-reports
+defaultconfigs
+logs
+screenshots
+
 
 # Files from Forge MDK
 forge*changelog.txt
 study/
+run/saves/Study World/serverconfig/forge-server.toml
+run/saves/Study World/stats/380df991-f603-344c-a090-369bad2a924a.json
+src/main/resources/assets/steeringlawstudy/gui/bar.png
+src/main/resources/assets/steeringlawstudy/gui/bar_bg.png
+run/saves/Study World/playerdata/380df991-f603-344c-a090-369bad2a924a.dat
+run/saves/Study World/playerdata/380df991-f603-344c-a090-369bad2a924a.dat_old

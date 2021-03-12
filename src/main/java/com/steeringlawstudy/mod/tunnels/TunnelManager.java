@@ -212,7 +212,6 @@ public class TunnelManager {
         // targeted block not part of tunnel --> reset tunnel
         if (!found && started) {
             list.forEach((name, tunnel) -> tunnel.reset());
-            //SteeringLawStudy.LOGGER.info("out of bounds, tunnel restarted.");
             started = false;
 
             if (!t.complete) {
@@ -337,21 +336,23 @@ public class TunnelManager {
 
                 world.playSound((PlayerEntity) player, currentPlayerLocation, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
                         SoundCategory.MASTER, 60, 0);
-
-                t.complete = true;
-
-                ArrayList countList = completionCount.get(t.name);
-                Integer counter = (Integer) countList.get(currentCameraIndex);
-                if (counter < SteeringLawStudy.COMPLETIONS) countList.set(currentCameraIndex, ++counter);
-
-                TunnelGUI.progress = calculateCompletionPercentage();
-
-                // shooting fireworks after completing an angle/tunnel
-                if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
-                    launchFireworks();
-                }
             }
+
+            t.complete = true;
+
+            ArrayList countList = completionCount.get(t.name);
+            Integer counter = (Integer) countList.get(currentCameraIndex);
+            if (counter < SteeringLawStudy.COMPLETIONS) countList.set(currentCameraIndex, ++counter);
+
+            TunnelGUI.progress = calculateCompletionPercentage();
+
+            // shooting fireworks after completing an angle/tunnel
+            if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
+                launchFireworks();
+            }
+
         }
+
     }
 
     /**
