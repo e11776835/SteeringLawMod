@@ -32,22 +32,29 @@ public class TunnelGUI {
         MatrixStack matrixStack = e.getMatrixStack();
 
         int x = 175;
-        int y = 80;
+        int y = 50;
 
         if (currentTunnel == 0) {
             // START AREA
             fontRenderer.drawStringWithShadow(matrixStack, "PLEASE READ THIS BEFORE STARTING",
                     x - 20, y, 0xff0000);
+            fontRenderer.drawStringWithShadow(matrixStack, "================================",
+                    x - 20, y + 10, 0xff0000);
             fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
-                    x - 21, y + 30, 0xffffff);
+                    x - 21, y + 40, 0xffffff);
             fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]",
-                    x - 52, y + 40, 0xffffff);
+                    x - 52, y + 50, 0xffffff);
 
             fontRenderer.drawStringWithShadow(matrixStack, "Please help the pandas by tracing the white paths!",
-                    x - 52, y + 60, 0xffffff);
+                    x - 52, y + 70, 0xffffff);
             fontRenderer.drawStringWithShadow(matrixStack, "To complete your quest, trace the paths " +
                             SteeringLawStudy.COMPLETIONS + " times from every angle.",
-                    x - 87, y + 70, 0xffffff);
+                    x - 87, y + 80, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "Look around to continue reading!",
+                    x - 20, y + 100, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "< [1/4] >",
+                    x, y + 110, 0xffffff);
 
         } else if (currentTunnel == SteeringLawStudy.NUM_TUNNELS) {
             // END AREA
@@ -63,6 +70,8 @@ public class TunnelGUI {
                 // LEVEL COMPLETE
                 fontRenderer.drawStringWithShadow(matrixStack, "LEVEL COMPLETE",
                         x + 10, y, 0x00ff00);
+                fontRenderer.drawStringWithShadow(matrixStack, "==============",
+                        x + 10, y + 10, 0x00ff00);
 
             } else {
                 // LEVEL PROGRESS
@@ -86,7 +95,10 @@ public class TunnelGUI {
 
                 // ANGLE
                 if (currentAngleDone) {
-                    fontRenderer.drawStringWithShadow(matrixStack, "ANGLE COMPLETE", x + 52, y, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
+                            x + 90, y, 0x00ff00);
 
                 } else {
                     fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0xffffff);

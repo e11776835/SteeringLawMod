@@ -13,8 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputUpdateEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.TreeMap;
 
 /**
@@ -26,10 +24,8 @@ public class TunnelManager {
     public static LivingEntity player;
     public static boolean found, started;
 
-    private static HashMap<String, ArrayList<BlockPos>> availableCameraAngles = new HashMap<>();
-    private static HashMap<String, ArrayList<Integer>> completionCount = new HashMap<>();
     private static int currentCameraIndex, currentTunnelIndex;
-    private static String currentTunnel;
+    private static Tunnel currentTunnel;
     private static BlockPos currentPlayerLocation;
 
     /**
@@ -43,22 +39,18 @@ public class TunnelManager {
         BlockPos pos_start = new BlockPos(153, 67, 2);
         Tunnel startTunnel = new Tunnel(TunnelManager.getSegmentName(pos_start), world);
         startTunnel.playerStart = pos_start;
-        availableCameraAngles.put(startTunnel.name, new ArrayList<>());
-        completionCount.put(startTunnel.name, new ArrayList<>());
-        availableCameraAngles.get(startTunnel.name).add(startTunnel.playerStart);
+        startTunnel.availableCameraAngles.add(startTunnel.playerStart);
         list.put(startTunnel.name, startTunnel);
 
         BlockPos pos_end = new BlockPos(306, 64, -29);
         Tunnel endTunnel = new Tunnel(TunnelManager.getSegmentName(pos_end), world);
         endTunnel.playerStart = pos_end;
-        availableCameraAngles.put(endTunnel.name, new ArrayList<>());
-        completionCount.put(endTunnel.name, new ArrayList<>());
-        availableCameraAngles.get(endTunnel.name).add(endTunnel.playerStart);
+        endTunnel.availableCameraAngles.add(endTunnel.playerStart);
         list.put(endTunnel.name, endTunnel);
 
         // no matter where player enters world, currentTunnel/Camera/Location can't be null
-        currentTunnel = startTunnel.name;
-        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(startTunnel.playerStart);
+        currentTunnel = startTunnel;
+        currentCameraIndex = startTunnel.availableCameraAngles.indexOf(startTunnel.playerStart);
         currentTunnelIndex = 0;
         currentPlayerLocation = startTunnel.playerStart;
 
@@ -147,41 +139,29 @@ public class TunnelManager {
         tunnel_5.add(new BlockPos(206, 86, 39), SegmentType.STOP);
         list.put(tunnel_5.name, tunnel_5);
 
+        tunnel.completionCount.add(0);
+        tunnel.completionCount.add(0);
+        tunnel_2.completionCount.add(0);
+        tunnel_2.completionCount.add(0);
+        tunnel_3.completionCount.add(0);
+        tunnel_3.completionCount.add(0);
+        tunnel_4.completionCount.add(0);
+        tunnel_4.completionCount.add(0);
+        tunnel_5.completionCount.add(0);
+        tunnel_5.completionCount.add(0);
+
         // CAMERA ANGLES
-        availableCameraAngles.put(tunnel.name, new ArrayList<>());
-        availableCameraAngles.put(tunnel_2.name, new ArrayList<>());
-        availableCameraAngles.put(tunnel_3.name, new ArrayList<>());
-        availableCameraAngles.put(tunnel_4.name, new ArrayList<>());
-        availableCameraAngles.put(tunnel_5.name, new ArrayList<>());
+        tunnel.availableCameraAngles.add(tunnel.playerStart);
+        tunnel_2.availableCameraAngles.add(tunnel_2.playerStart);
+        tunnel_3.availableCameraAngles.add(tunnel_3.playerStart);
+        tunnel_4.availableCameraAngles.add(tunnel_4.playerStart);
+        tunnel_5.availableCameraAngles.add(tunnel_5.playerStart);
 
-        completionCount.put(tunnel.name, new ArrayList<>());
-        completionCount.put(tunnel_2.name, new ArrayList<>());
-        completionCount.put(tunnel_3.name, new ArrayList<>());
-        completionCount.put(tunnel_4.name, new ArrayList<>());
-        completionCount.put(tunnel_5.name, new ArrayList<>());
-
-        availableCameraAngles.get(tunnel.name).add(tunnel.playerStart);
-        availableCameraAngles.get(tunnel_2.name).add(tunnel_2.playerStart);
-        availableCameraAngles.get(tunnel_3.name).add(tunnel_3.playerStart);
-        availableCameraAngles.get(tunnel_4.name).add(tunnel_4.playerStart);
-        availableCameraAngles.get(tunnel_5.name).add(tunnel_5.playerStart);
-
-        completionCount.get(tunnel.name).add(0);
-        completionCount.get(tunnel.name).add(0);
-        completionCount.get(tunnel_2.name).add(0);
-        completionCount.get(tunnel_2.name).add(0);
-        completionCount.get(tunnel_3.name).add(0);
-        completionCount.get(tunnel_3.name).add(0);
-        completionCount.get(tunnel_4.name).add(0);
-        completionCount.get(tunnel_4.name).add(0);
-        completionCount.get(tunnel_5.name).add(0);
-        completionCount.get(tunnel_5.name).add(0);
-
-        availableCameraAngles.get(tunnel.name).add(new BlockPos(186, 65, -24));
-        availableCameraAngles.get(tunnel_2.name).add(new BlockPos(223, 66, 72));
-        availableCameraAngles.get(tunnel_3.name).add(new BlockPos(270, 80, 44));
-        availableCameraAngles.get(tunnel_4.name).add(new BlockPos(248, 81, 120));
-        availableCameraAngles.get(tunnel_5.name).add(new BlockPos(209, 82, 33));
+        tunnel.availableCameraAngles.add(new BlockPos(186, 65, -24));
+        tunnel_2.availableCameraAngles.add(new BlockPos(223, 66, 72));
+        tunnel_3.availableCameraAngles.add(new BlockPos(270, 80, 44));
+        tunnel_4.availableCameraAngles.add(new BlockPos(248, 81, 120));
+        tunnel_5.availableCameraAngles.add(new BlockPos(209, 82, 33));
     }
 
     /**
@@ -196,15 +176,14 @@ public class TunnelManager {
         String segmentName = getSegmentName(pos);
         found = false;
         player = p;
-        Tunnel t = list.get(currentTunnel);
 
         // if tunnel was completed before (if previous target was STOP), reset tunnel
         // TODO statt .reset() eine eigene effekt methode?
-        if (t.complete) {
+        if (currentTunnel.complete) {
             list.forEach((name, tunnel) -> tunnel.reset());
             started = false;
-            t.start.reset();
-            t.complete = false;
+            currentTunnel.start.reset();
+            currentTunnel.complete = false;
         }
 
         // search current pos, set it visited
@@ -223,12 +202,12 @@ public class TunnelManager {
             list.forEach((name, tunnel) -> tunnel.reset());
             started = false;
 
-            if (!t.complete) {
+            if (!currentTunnel.complete) {
                 world.playSound((PlayerEntity) player, currentPlayerLocation,
                         SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.MASTER, 90, 0);
             } else {
-                t.start.reset();
-                t.complete = false;
+                currentTunnel.start.reset();
+                currentTunnel.complete = false;
             }
         }
     }
@@ -244,21 +223,22 @@ public class TunnelManager {
 
         // determine next tunnel depending on input
         if (goingUp) {
-            if (list.higherEntry(currentTunnel) != null) {
-                currentTunnel = list.higherEntry(currentTunnel).getKey();
+            if (list.higherEntry(currentTunnel.name) != null) {
+                currentTunnel = list.higherEntry(currentTunnel.name).getValue();
                 currentTunnelIndex += 1;
                 sound = true;
             }
+
         } else if (goingDown && currentTunnelIndex > 0) {
-            if (list.lowerEntry(currentTunnel) != null) {
-                currentTunnel = list.lowerEntry(currentTunnel).getKey();
+            if (list.lowerEntry(currentTunnel.name) != null) {
+                currentTunnel = list.lowerEntry(currentTunnel.name).getValue();
                 currentTunnelIndex -= 1;
                 sound = true;
             }
         }
 
         // change player location to new one
-        currentPlayerLocation = list.get(currentTunnel).playerStart;
+        currentPlayerLocation = currentTunnel.playerStart;
         player.setRawPosition(
                 currentPlayerLocation.getX(),
                 currentPlayerLocation.getY(),
@@ -270,7 +250,7 @@ public class TunnelManager {
                     SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 60, 1);
         }
         // reset currentCameraIndex
-        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(list.get(currentTunnel).playerStart);
+        currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentTunnel.playerStart);
         updateGUIData();
     }
 
@@ -282,19 +262,19 @@ public class TunnelManager {
         boolean goingRight = event.getMovementInput().rightKeyDown;
         PlayerEntity player = event.getPlayer();
 
-        currentCameraIndex = availableCameraAngles.get(currentTunnel).indexOf(currentPlayerLocation);
+        currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentPlayerLocation);
         if (currentCameraIndex == -1) return;
 
         // determine next cameraIndex depending on input
         if (goingLeft) {
             if (currentCameraIndex == 0) {
-                currentCameraIndex = availableCameraAngles.get(currentTunnel).size() - 1;
+                currentCameraIndex = currentTunnel.availableCameraAngles.size() - 1;
             } else {
                 currentCameraIndex = currentCameraIndex - 1;
             }
 
         } else if (goingRight) {
-            if (currentCameraIndex == availableCameraAngles.get(currentTunnel).size() - 1) {
+            if (currentCameraIndex == currentTunnel.availableCameraAngles.size() - 1) {
                 currentCameraIndex = 0;
             } else {
                 currentCameraIndex = currentCameraIndex + 1;
@@ -303,14 +283,14 @@ public class TunnelManager {
 
         updateGUIData();
 
-        currentPlayerLocation = availableCameraAngles.get(currentTunnel).get(currentCameraIndex);
+        currentPlayerLocation = currentTunnel.availableCameraAngles.get(currentCameraIndex);
         player.setRawPosition(
                 currentPlayerLocation.getX(),
                 currentPlayerLocation.getY(),
                 currentPlayerLocation.getZ()
         );
 
-        if (availableCameraAngles.get(currentTunnel).size() > 1) {
+        if (currentTunnel.availableCameraAngles.size() > 1) {
             world.playSound((PlayerEntity) player, currentPlayerLocation,
                     SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 20, 1);
         }
@@ -343,10 +323,8 @@ public class TunnelManager {
             }
 
             t.complete = true;
-
-            ArrayList countList = completionCount.get(t.name);
-            Integer counter = (Integer) countList.get(currentCameraIndex);
-            if (counter < SteeringLawStudy.COMPLETIONS) countList.set(currentCameraIndex, ++counter);
+            Integer counter = (Integer) t.completionCount.get(currentCameraIndex);
+            if (counter < SteeringLawStudy.COMPLETIONS) t.completionCount.set(currentCameraIndex, ++counter);
 
             updateGUIData();
 
@@ -391,32 +369,42 @@ public class TunnelManager {
                     tagNBT.put("Fireworks", fireworksNBT);
                     firework.setTag(tagNBT);
 */
-        FireworkRocketEntity rocket = new FireworkRocketEntity(world,
-                currentPlayerLocation.getX() - 2, currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ() + 4, firework);
-        FireworkRocketEntity rocket1 = new FireworkRocketEntity(world,
-                currentPlayerLocation.getX() - 1, currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ() + 4, firework);
+
+        if (calculateCompletionPercentage() >= 100) {
+            // SHOOT 5 ROCKETS IF LEVEL COMPLETE
+            FireworkRocketEntity rocket = new FireworkRocketEntity(world,
+                    currentPlayerLocation.getX() - 2, currentPlayerLocation.getY(),
+                    currentPlayerLocation.getZ() + 4, firework);
+            FireworkRocketEntity rocket1 = new FireworkRocketEntity(world,
+                    currentPlayerLocation.getX() - 1, currentPlayerLocation.getY(),
+                    currentPlayerLocation.getZ() + 4, firework);
+            FireworkRocketEntity rocket3 = new FireworkRocketEntity(world,
+                    currentPlayerLocation.getX() + 1, currentPlayerLocation.getY(),
+                    currentPlayerLocation.getZ() + 4, firework);
+            FireworkRocketEntity rocket4 = new FireworkRocketEntity(world,
+                    currentPlayerLocation.getX() + 2, currentPlayerLocation.getY(),
+                    currentPlayerLocation.getZ() + 4, firework);
+
+            world.addEntity(rocket);
+            world.addEntity(rocket1);
+            world.addEntity(rocket3);
+            world.addEntity(rocket4);
+        }
+
+        // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE
         FireworkRocketEntity rocket2 = new FireworkRocketEntity(world,
                 currentPlayerLocation.getX(), currentPlayerLocation.getY(),
                 currentPlayerLocation.getZ() + 4, firework);
-        FireworkRocketEntity rocket3 = new FireworkRocketEntity(world,
-                currentPlayerLocation.getX() + 1, currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ() + 4, firework);
-        FireworkRocketEntity rocket4 = new FireworkRocketEntity(world,
-                currentPlayerLocation.getX() + 2, currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ() + 4, firework);
+
+        world.addEntity(rocket2);
+
 /*
                     rocketNBT.putInt("LifeTime", 20);
                     rocketNBT.putInt("Count", 5);
                     rocketNBT.put("FireworksItem", fireworksItemNBT);
                     rocket.writeAdditional(rocketNBT);
 */
-        world.addEntity(rocket);
-        world.addEntity(rocket1);
-        world.addEntity(rocket2);
-        world.addEntity(rocket3);
-        world.addEntity(rocket4);
+
     }
 
     /**
@@ -425,12 +413,11 @@ public class TunnelManager {
     private static Float calculateCompletionPercentage() {
         Float currentCompletions = 0f;
 
-        for (Integer count : completionCount.get(currentTunnel)) {
+        for (Integer count : currentTunnel.completionCount) {
             currentCompletions += count;
         }
 
-        int completionsNeeded = availableCameraAngles.get(currentTunnel).size() * SteeringLawStudy.COMPLETIONS;
-
+        int completionsNeeded = currentTunnel.completionCount.size() * SteeringLawStudy.COMPLETIONS;
         return currentCompletions / completionsNeeded * 100;
     }
 
@@ -442,14 +429,14 @@ public class TunnelManager {
         TunnelGUI.currentAngle = currentCameraIndex + 1;
 
         if (currentTunnelIndex > 0 && currentTunnelIndex < SteeringLawStudy.NUM_TUNNELS - 1) {
-            if (SteeringLawStudy.COMPLETIONS == completionCount.get(currentTunnel).get(currentCameraIndex)) {
+            if (SteeringLawStudy.COMPLETIONS == currentTunnel.completionCount.get(currentCameraIndex)) {
                 TunnelGUI.currentAngleDone = true;
             } else {
                 TunnelGUI.currentAngleDone = false;
             }
         }
 
-        TunnelGUI.currentNumAngles = availableCameraAngles.get(currentTunnel).size();
+        TunnelGUI.currentNumAngles = currentTunnel.availableCameraAngles.size();
         TunnelGUI.progress = calculateCompletionPercentage();
     }
 }

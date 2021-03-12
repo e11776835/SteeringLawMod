@@ -3,6 +3,7 @@ package com.steeringlawstudy.mod.tunnels;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -13,6 +14,8 @@ public class Tunnel {
     public String name;
     private World world;
     public HashMap<String, Segment> list = new HashMap<>();
+    public ArrayList<BlockPos> availableCameraAngles = new ArrayList<>();
+    public ArrayList<Integer> completionCount = new ArrayList<>();
     public Segment start, stop;
     public BlockPos playerStart;
     public boolean complete;
