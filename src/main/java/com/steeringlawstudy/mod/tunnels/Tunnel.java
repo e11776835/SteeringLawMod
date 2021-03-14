@@ -19,11 +19,12 @@ public class Tunnel {
     public ArrayList<Boolean> angleCompleted = new ArrayList<>();
     public Segment start, stop;
     public BlockPos playerStart;
-    public boolean complete;
+    public boolean complete, allDone;
 
     public Tunnel(String n, World w) {
         name = n;
         world = w;
+        allDone = false;
     }
 
     /**

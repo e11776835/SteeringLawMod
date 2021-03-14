@@ -224,10 +224,12 @@ public class TunnelManager {
 
         // determine next tunnel depending on input
         if (goingUp) {
-            if (list.higherEntry(currentTunnel.name) != null) {
-                currentTunnel = list.higherEntry(currentTunnel.name).getValue();
-                currentTunnelIndex += 1;
-                sound = true;
+            if (currentTunnel.allDone || currentTunnelIndex == 0) {
+                if (list.higherEntry(currentTunnel.name) != null) {
+                    currentTunnel = list.higherEntry(currentTunnel.name).getValue();
+                    currentTunnelIndex += 1;
+                    sound = true;
+                }
             }
 
         } else if (goingDown && currentTunnelIndex > 0) {
@@ -393,7 +395,7 @@ public class TunnelManager {
             world.addEntity(rocket3);
             world.addEntity(rocket4);
 
-
+            currentTunnel.allDone = true;
         }
 
         // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE
@@ -428,9 +430,6 @@ public class TunnelManager {
      * writes current values to TunnelGUI
      */
     private static void updateGUIData() {
-        TunnelGUI.currentTunnel = currentTunnelIndex;
-        TunnelGUI.currentAngle = currentCameraIndex + 1;
-
         if (currentTunnelIndex > 0 && currentTunnelIndex < SteeringLawStudy.NUM_TUNNELS - 1) {
             if (SteeringLawStudy.COMPLETIONS == currentTunnel.completionCount.get(currentCameraIndex)) {
                 TunnelGUI.currentAngleDone = true;
@@ -439,6 +438,8 @@ public class TunnelManager {
             }
         }
 
+        TunnelGUI.currentTunnel = currentTunnelIndex;
+        TunnelGUI.currentAngle = currentCameraIndex + 1;
         TunnelGUI.currentNumAngles = currentTunnel.availableCameraAngles.size();
         TunnelGUI.progress = calculateCompletionPercentage();
     }
