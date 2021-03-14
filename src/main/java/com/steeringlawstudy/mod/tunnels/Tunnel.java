@@ -16,6 +16,7 @@ public class Tunnel {
     public HashMap<String, Segment> list = new HashMap<>();
     public ArrayList<BlockPos> availableCameraAngles = new ArrayList<>();
     public ArrayList<Integer> completionCount = new ArrayList<>();
+    public ArrayList<Boolean> angleCompleted = new ArrayList<>();
     public Segment start, stop;
     public BlockPos playerStart;
     public boolean complete;
@@ -77,4 +78,10 @@ public class Tunnel {
         return world;
     }
 
+    public void setupCounts() {
+        for (BlockPos bp: availableCameraAngles) {
+            completionCount.add(0);
+            angleCompleted.add(false);
+        }
+    }
 }

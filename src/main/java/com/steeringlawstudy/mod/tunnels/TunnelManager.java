@@ -139,17 +139,6 @@ public class TunnelManager {
         tunnel_5.add(new BlockPos(206, 86, 39), SegmentType.STOP);
         list.put(tunnel_5.name, tunnel_5);
 
-        tunnel.completionCount.add(0);
-        tunnel.completionCount.add(0);
-        tunnel_2.completionCount.add(0);
-        tunnel_2.completionCount.add(0);
-        tunnel_3.completionCount.add(0);
-        tunnel_3.completionCount.add(0);
-        tunnel_4.completionCount.add(0);
-        tunnel_4.completionCount.add(0);
-        tunnel_5.completionCount.add(0);
-        tunnel_5.completionCount.add(0);
-
         // CAMERA ANGLES
         tunnel.availableCameraAngles.add(tunnel.playerStart);
         tunnel_2.availableCameraAngles.add(tunnel_2.playerStart);
@@ -162,6 +151,11 @@ public class TunnelManager {
         tunnel_3.availableCameraAngles.add(new BlockPos(270, 80, 44));
         tunnel_4.availableCameraAngles.add(new BlockPos(248, 81, 120));
         tunnel_5.availableCameraAngles.add(new BlockPos(209, 82, 33));
+
+        // SETUP COUNTS
+        for (Tunnel t : list.values()) {
+            t.setupCounts();
+        }
     }
 
     /**
@@ -329,7 +323,7 @@ public class TunnelManager {
             updateGUIData();
 
             // shooting fireworks after completing an angle/tunnel _ times
-            if (counter == SteeringLawStudy.COMPLETIONS && !world.isRemote()) {
+            if (counter == SteeringLawStudy.COMPLETIONS && !t.angleCompleted.get(currentCameraIndex) && !world.isRemote()) {
                 launchFireworks();
             }
 
@@ -397,6 +391,7 @@ public class TunnelManager {
                 currentPlayerLocation.getZ() + 4, firework);
 
         world.addEntity(rocket2);
+        currentTunnel.angleCompleted.set(currentCameraIndex, true);
 
 /*
                     rocketNBT.putInt("LifeTime", 20);
