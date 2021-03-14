@@ -430,7 +430,7 @@ public class TunnelManager {
      * writes current values to TunnelGUI
      */
     private static void updateGUIData() {
-        if (currentTunnelIndex > 0 && currentTunnelIndex < SteeringLawStudy.NUM_TUNNELS - 1) {
+        if (currentTunnelIndex > 0 && currentTunnelIndex <= SteeringLawStudy.NUM_TUNNELS - 1) {
             if (SteeringLawStudy.COMPLETIONS == currentTunnel.completionCount.get(currentCameraIndex)) {
                 TunnelGUI.currentAngleDone = true;
             } else {

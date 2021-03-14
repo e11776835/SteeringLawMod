@@ -54,7 +54,6 @@ public class TunnelGUI {
             fontRenderer.drawStringWithShadow(matrixStack, "All the pandas are cheering you on for what you did!",
                     x - 68, y + 50, 0x00ff00);
 
-
             fontRenderer.drawStringWithShadow(matrixStack, "THANK YOU SO MUCH FOR YOUR HELP!",
                     x - 25, y + 70, 0x00ff00);
         } else {
@@ -68,6 +67,9 @@ public class TunnelGUI {
                         x + 10, y + 100, 0x00ff00);
                 fontRenderer.drawStringWithShadow(matrixStack, "==============",
                         x + 10, y + 110, 0x00ff00);
+
+                fontRenderer.drawStringWithShadow(matrixStack, "Continue by using [W]",
+                        x, y + 130, 0x00ff00);
 
             } else {
                 // LEVEL PROGRESS
@@ -100,6 +102,8 @@ public class TunnelGUI {
                             x + 10, y + 100, 0x00ff00);
                     fontRenderer.drawStringWithShadow(matrixStack, "==============",
                             x + 10, y + 110, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, "Continue by using [A]",
+                            x, y + 130, 0x00ff00);
 
                 } else {
                     fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 51, y, 0xffffff);
@@ -115,21 +119,19 @@ public class TunnelGUI {
 
     private void manageTutorialScreen(FontRenderer fontRenderer, MatrixStack matrixStack, int x, int y) {
         // START AREA
-        if (dir == Direction.SOUTH) {
+        if (dir == Direction.WEST) {
             fontRenderer.drawStringWithShadow(matrixStack, "< [1/4] >",
                     x + 42, y + 170, 0xffffff);
 
-            fontRenderer.drawStringWithShadow(matrixStack, "    READ THIS BEFORE STARTING   ",
-                    x - 22, y, 0xff0000);
-            fontRenderer.drawStringWithShadow(matrixStack, "================================",
-                    x - 26, y + 10, 0xff0000);
+            fontRenderer.drawStringWithShadow(matrixStack, "WELCOME TO PANDA ISLAND!",
+                    x + 2, y, 0xff0000);
+            fontRenderer.drawStringWithShadow(matrixStack, "========================",
+                    x - 2, y + 10, 0xff0000);
 
             fontRenderer.drawStringWithShadow(matrixStack, "Please turn around, reading everything you need to know",
                     x - 75, y + 50, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "When you are ready, start your journey with [W]",
-                    x - 55, y + 60, 0xffffff);
 
-        } else if (dir == Direction.WEST) {
+        } else if (dir == Direction.NORTH) {
             fontRenderer.drawStringWithShadow(matrixStack, "< [2/4] >",
                     x + 42, y + 170, 0xffffff);
 
@@ -147,7 +149,7 @@ public class TunnelGUI {
             fontRenderer.drawStringWithShadow(matrixStack, "Use the magic bamboo to break the seals and save the pandas!\"",
                     x - 95, y + 80, 0xffffff);
 
-        } else if (dir == Direction.NORTH) {
+        } else if (dir == Direction.EAST) {
             fontRenderer.drawStringWithShadow(matrixStack, "< [3/4] >",
                     x + 42, y + 170, 0xffffff);
 
@@ -166,7 +168,7 @@ public class TunnelGUI {
             fontRenderer.drawStringWithShadow(matrixStack, "After completing all angles in a level, you can continue.",
                     x - 71, y + 80, 0xffffff);
 
-        } else if (dir == Direction.EAST) {
+        } else if (dir == Direction.SOUTH) {
             fontRenderer.drawStringWithShadow(matrixStack, "< [4/4] >",
                     x + 42, y + 170, 0xffffff);
 
@@ -179,8 +181,8 @@ public class TunnelGUI {
                     x - 26, y + 50, 0xffffff);
             fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]",
                     x - 59, y + 60, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "To start, face the panda and press [W]",
-                    x - 42, y + 80, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "When you are ready, start your journey with [W]",
+                    x - 55, y + 80, 0x00ff00);
         }
 
         // ALL DIRECTIONS
