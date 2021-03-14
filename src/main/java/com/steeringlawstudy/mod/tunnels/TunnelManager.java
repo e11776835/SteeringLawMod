@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.Direction;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -180,6 +181,12 @@ public class TunnelManager {
             currentTunnel.complete = false;
         }
 
+        // if player in start area, record direction player is looking in --> needed for GUI
+        if (currentTunnelIndex == 0) {
+            Direction direction = player.getHorizontalFacing();
+            if (direction != Direction.DOWN && direction != Direction.UP) TunnelGUI.dir = direction;
+        }
+
         // search current pos, set it visited
         list.forEach((name, tunnel) -> {
             if (tunnel.checkFor(segmentName)) {
@@ -335,6 +342,8 @@ public class TunnelManager {
      * after a tunnel section is complete, launch fireworks
      */
     private static void launchFireworks() {
+        // when method is entered, the current angle was completed
+        currentTunnel.angleCompleted.set(currentCameraIndex, true);
 /*
                 ParticleType type = ParticleTypes.FIREWORK;
                 IParticleData particleData = new ItemParticleData(type, new ItemStack(Items.ROSE_BUSH));
@@ -383,6 +392,8 @@ public class TunnelManager {
             world.addEntity(rocket1);
             world.addEntity(rocket3);
             world.addEntity(rocket4);
+
+
         }
 
         // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE
@@ -391,15 +402,12 @@ public class TunnelManager {
                 currentPlayerLocation.getZ() + 4, firework);
 
         world.addEntity(rocket2);
-        currentTunnel.angleCompleted.set(currentCameraIndex, true);
-
 /*
                     rocketNBT.putInt("LifeTime", 20);
                     rocketNBT.putInt("Count", 5);
                     rocketNBT.put("FireworksItem", fireworksItemNBT);
                     rocket.writeAdditional(rocketNBT);
 */
-
     }
 
     /**

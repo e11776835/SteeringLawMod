@@ -4,6 +4,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.util.Direction;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -15,9 +16,11 @@ public class TunnelGUI {
     public static boolean currentAngleDone = false;
     public static Integer currentNumAngles = 1;
     public static Float progress = 0f;
+    public static Direction dir = Direction.SOUTH;
 
     @SubscribeEvent
     public void renderGUI(RenderGameOverlayEvent e) {
+        // Only enter if not in Dev Mode, only for text rendering
         if (SteeringLawStudy.DEV_MODE || e.isCancelable() || e.getType() != RenderGameOverlayEvent.ElementType.TEXT) {
             return;
         }
@@ -32,46 +35,39 @@ public class TunnelGUI {
         MatrixStack matrixStack = e.getMatrixStack();
 
         int x = 175;
-        int y = 50;
+        int y = 30;
 
         if (currentTunnel == 0) {
-            // START AREA
-            fontRenderer.drawStringWithShadow(matrixStack, "PLEASE READ THIS BEFORE STARTING",
-                    x - 20, y, 0xff0000);
-            fontRenderer.drawStringWithShadow(matrixStack, "================================",
-                    x - 20, y + 10, 0xff0000);
-            fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
-                    x - 21, y + 40, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]",
-                    x - 52, y + 50, 0xffffff);
-
-            fontRenderer.drawStringWithShadow(matrixStack, "Please help the pandas by tracing the white paths!",
-                    x - 52, y + 70, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "To complete your quest, trace the paths " +
-                            SteeringLawStudy.COMPLETIONS + " times from every angle.",
-                    x - 87, y + 80, 0xffffff);
-
-            fontRenderer.drawStringWithShadow(matrixStack, "Look around to continue reading!",
-                    x - 20, y + 100, 0xffffff);
-            fontRenderer.drawStringWithShadow(matrixStack, "< [1/4] >",
-                    x, y + 110, 0xffffff);
+            manageTutorialScreen(fontRenderer, matrixStack, x, y);
 
         } else if (currentTunnel == SteeringLawStudy.NUM_TUNNELS) {
             // END AREA
-            fontRenderer.drawStringWithShadow(matrixStack, "CONGRATULATIONS! THE PANDAS ARE HAPPY!",
-                    x - 20, y, 0x00ff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "CONGRATULATIONS!",
+                    x + 25, y, 0x00ff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "================",
+                    x + 23, y + 10, 0x00ff00);
 
+            fontRenderer.drawStringWithShadow(matrixStack, "You broke all seals on panda island!",
+                    x - 28, y + 30, 0x00ff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "Finally, the evil curse is lifted and all pandas are safe!",
+                    x - 73, y + 40, 0x00ff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "All the pandas are cheering you on for what you did!",
+                    x - 68, y + 50, 0x00ff00);
+
+
+            fontRenderer.drawStringWithShadow(matrixStack, "THANK YOU SO MUCH FOR YOUR HELP!",
+                    x - 25, y + 70, 0x00ff00);
         } else {
             // REGULAR TUNNELS
-            x += 10;
+            x += 15;
             y = 10;
 
             if (progress >= 100) {
                 // LEVEL COMPLETE
                 fontRenderer.drawStringWithShadow(matrixStack, "LEVEL COMPLETE",
-                        x + 10, y, 0x00ff00);
+                        x + 10, y + 100, 0x00ff00);
                 fontRenderer.drawStringWithShadow(matrixStack, "==============",
-                        x + 10, y + 10, 0x00ff00);
+                        x + 10, y + 110, 0x00ff00);
 
             } else {
                 // LEVEL PROGRESS
@@ -95,20 +91,101 @@ public class TunnelGUI {
 
                 // ANGLE
                 if (currentAngleDone) {
-                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0x00ff00);
-                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 51, y, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 89, y, 0x00ff00);
                     fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
-                            x + 90, y, 0x00ff00);
+                            x + 94, y, 0x00ff00);
+
+                    fontRenderer.drawStringWithShadow(matrixStack, "ANGLE COMPLETE",
+                            x + 10, y + 100, 0x00ff00);
+                    fontRenderer.drawStringWithShadow(matrixStack, "==============",
+                            x + 10, y + 110, 0x00ff00);
 
                 } else {
-                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 52, y, 0xffffff);
-                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 85, y, 0xffffff);
+                    fontRenderer.drawStringWithShadow(matrixStack, "Angle", x + 51, y, 0xffffff);
+                    fontRenderer.drawStringWithShadow(matrixStack, currentAngle.toString(), x + 89, y, 0xffffff);
                     fontRenderer.drawStringWithShadow(matrixStack, "/" + currentNumAngles.toString(),
-                            x + 90, y, 0xffffff);
+                            x + 94, y, 0xffffff);
                 }
 
             }
         }
+
+    }
+
+    private void manageTutorialScreen(FontRenderer fontRenderer, MatrixStack matrixStack, int x, int y) {
+        // START AREA
+        if (dir == Direction.SOUTH) {
+            fontRenderer.drawStringWithShadow(matrixStack, "< [1/4] >",
+                    x + 42, y + 170, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "    READ THIS BEFORE STARTING   ",
+                    x - 22, y, 0xff0000);
+            fontRenderer.drawStringWithShadow(matrixStack, "================================",
+                    x - 26, y + 10, 0xff0000);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "Please turn around, reading everything you need to know",
+                    x - 75, y + 50, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "When you are ready, start your journey with [W]",
+                    x - 55, y + 60, 0xffffff);
+
+        } else if (dir == Direction.WEST) {
+            fontRenderer.drawStringWithShadow(matrixStack, "< [2/4] >",
+                    x + 42, y + 170, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "STORY",
+                    x + 50, y, 0xffff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "=====",
+                    x + 50, y + 10, 0xffff00);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "\"Please help us!\", the sad panda cries. \"An evil force",
+                    x - 69, y + 50, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "has attacked panda island, and all pandas are gone!",
+                    x - 67, y + 60, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "To remove the curse, all evil seals have to be broken.",
+                    x - 73, y + 70, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "Use the magic bamboo to break the seals and save the pandas!\"",
+                    x - 95, y + 80, 0xffffff);
+
+        } else if (dir == Direction.NORTH) {
+            fontRenderer.drawStringWithShadow(matrixStack, "< [3/4] >",
+                    x + 42, y + 170, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "OBJECTIVE",
+                    x + 39, y, 0xffff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "=========",
+                    x + 39, y + 10, 0xffff00);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "Please help the pandas by tracing the white paths!",
+                    x - 60, y + 50, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "Some paths need to be traced from multiple angles.",
+                    x - 61, y + 60, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "To complete an angle, trace the paths " +
+                            SteeringLawStudy.COMPLETIONS + " times.",
+                    x - 50, y + 70, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "After completing all angles in a level, you can continue.",
+                    x - 71, y + 80, 0xffffff);
+
+        } else if (dir == Direction.EAST) {
+            fontRenderer.drawStringWithShadow(matrixStack, "< [4/4] >",
+                    x + 42, y + 170, 0xffffff);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "CONTROLS",
+                    x + 40, y, 0xffff00);
+            fontRenderer.drawStringWithShadow(matrixStack, "========",
+                    x + 40, y + 10, 0xffff00);
+
+            fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
+                    x - 26, y + 50, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "If available, change camera angle with [A] and [D]",
+                    x - 59, y + 60, 0xffffff);
+            fontRenderer.drawStringWithShadow(matrixStack, "To start, face the panda and press [W]",
+                    x - 42, y + 80, 0xffffff);
+        }
+
+        // ALL DIRECTIONS
+        fontRenderer.drawStringWithShadow(matrixStack, "Look around to continue reading!",
+                x - 12, y + 160, 0xffffff);
 
     }
 }
