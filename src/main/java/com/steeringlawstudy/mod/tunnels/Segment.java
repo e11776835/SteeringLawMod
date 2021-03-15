@@ -26,6 +26,7 @@ public class Segment {
     }
 
     public void setVisited() {
+        if (tunnel.allDone) return;
         if (type == SegmentType.PATH) {
             tunnel.getWorld().setBlockState(pos, Blocks.LIGHT_GRAY_CONCRETE.getDefaultState());
         }
@@ -45,9 +46,25 @@ public class Segment {
     }
 
     public void reset() {
+        if (tunnel.allDone) return;
+
         if (type.equals(SegmentType.PATH)) {
             tunnel.getWorld().setBlockState(pos, Blocks.WHITE_CONCRETE.getDefaultState());
         }
         visited = false;
+    }
+
+    public void setAllDone() {
+        tunnel.getWorld().setBlockState(pos, Blocks.AIR.getDefaultState());
+    }
+
+    public void prepareNextRun() {
+        if (type == SegmentType.PATH) {
+            tunnel.getWorld().setBlockState(pos, Blocks.WHITE_CONCRETE.getDefaultState());
+        } else if (type == SegmentType.START) {
+            tunnel.getWorld().setBlockState(pos, Blocks.LIME_CONCRETE.getDefaultState());
+        } else if (type == SegmentType.STOP) {
+            tunnel.getWorld().setBlockState(pos, Blocks.RED_CONCRETE.getDefaultState());
+        }
     }
 }

@@ -2,6 +2,8 @@ package com.steeringlawstudy.mod.tunnels;
 
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.gui.TunnelGUI;
+import net.minecraft.client.audio.BackgroundMusicSelector;
+import net.minecraft.client.audio.BackgroundMusicTracks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -174,7 +176,7 @@ public class TunnelManager {
 
         // if tunnel was completed before (if previous target was STOP), reset tunnel
         // TODO statt .reset() eine eigene effekt methode?
-        if (currentTunnel.complete) {
+        if (currentTunnel.complete && !currentTunnel.allDone) {
             list.forEach((name, tunnel) -> tunnel.reset());
             started = false;
             currentTunnel.start.reset();
@@ -184,7 +186,21 @@ public class TunnelManager {
         // if player in start area, record direction player is looking in --> needed for GUI
         if (currentTunnelIndex == 0) {
             Direction direction = player.getHorizontalFacing();
-            if (direction != Direction.DOWN && direction != Direction.UP) TunnelGUI.dir = direction;
+            if (direction != Direction.DOWN && direction != Direction.UP) {
+                if (TunnelGUI.dir != direction) {
+                    TunnelGUI.dir = direction;
+                    // at start, play ambient music
+                    world.playSound((PlayerEntity) player, currentPlayerLocation,
+                            SoundEvents.ENTITY_PANDA_WORRIED_AMBIENT, SoundCategory.MASTER, 80, 1);
+                }
+            }
+        }
+
+        // when end is reached, reset tunnels for next run
+        if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS || currentTunnelIndex == 0) {
+            list.forEach((name, tunnel) -> {
+                tunnel.prepareNextRun();
+            });
         }
 
         // search current pos, set it visited
@@ -205,7 +221,7 @@ public class TunnelManager {
 
             if (!currentTunnel.complete) {
                 world.playSound((PlayerEntity) player, currentPlayerLocation,
-                        SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.MASTER, 90, 0);
+                        SoundEvents.BLOCK_GLASS_BREAK, SoundCategory.VOICE, 10, 0);
             } else {
                 currentTunnel.start.reset();
                 currentTunnel.complete = false;
@@ -240,21 +256,21 @@ public class TunnelManager {
             }
         }
 
-        // change player location to new one
-        currentPlayerLocation = currentTunnel.playerStart;
-        player.setRawPosition(
-                currentPlayerLocation.getX(),
-                currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ()
-        );
-
         if (sound) {
+            // change player location to new one
+            currentPlayerLocation = currentTunnel.playerStart;
+            player.setRawPosition(
+                    currentPlayerLocation.getX(),
+                    currentPlayerLocation.getY(),
+                    currentPlayerLocation.getZ()
+            );
+
             world.playSound((PlayerEntity) player, currentPlayerLocation,
                     SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 60, 1);
+            // reset currentCameraIndex
+            currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentTunnel.playerStart);
+            updateGUIData();
         }
-        // reset currentCameraIndex
-        currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentTunnel.playerStart);
-        updateGUIData();
     }
 
     /**
@@ -295,7 +311,7 @@ public class TunnelManager {
 
         if (currentTunnel.availableCameraAngles.size() > 1) {
             world.playSound((PlayerEntity) player, currentPlayerLocation,
-                    SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 20, 1);
+                    SoundEvents.UI_BUTTON_CLICK, SoundCategory.VOICE, 10, 1);
         }
     }
 
@@ -322,7 +338,7 @@ public class TunnelManager {
                 });
 
                 world.playSound((PlayerEntity) player, currentPlayerLocation, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,
-                        SoundCategory.MASTER, 60, 0);
+                        SoundCategory.VOICE, 10, 0);
             }
 
             t.complete = true;
@@ -395,7 +411,9 @@ public class TunnelManager {
             world.addEntity(rocket3);
             world.addEntity(rocket4);
 
-            currentTunnel.allDone = true;
+            currentTunnel.setAllDone();
+            world.playSound((PlayerEntity) player, currentPlayerLocation,
+                    SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, 100, 1);
         }
 
         // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE
@@ -430,7 +448,7 @@ public class TunnelManager {
      * writes current values to TunnelGUI
      */
     private static void updateGUIData() {
-        if (currentTunnelIndex > 0 && currentTunnelIndex <= SteeringLawStudy.NUM_TUNNELS - 1) {
+        if (currentTunnelIndex > 0 && currentTunnelIndex < SteeringLawStudy.NUM_TUNNELS) {
             if (SteeringLawStudy.COMPLETIONS == currentTunnel.completionCount.get(currentCameraIndex)) {
                 TunnelGUI.currentAngleDone = true;
             } else {

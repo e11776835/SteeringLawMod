@@ -39,6 +39,8 @@ public class Tunnel {
         } else if (type == SegmentType.STOP) {
             stop = s;
         }
+
+        s.prepareNextRun();
     }
 
     /**
@@ -69,6 +71,15 @@ public class Tunnel {
      */
     public void reset() {
         list.forEach((name, segment) -> segment.reset());
+    }
+
+    public void setAllDone() {
+        allDone = true;
+        list.forEach((name, segment) -> segment.setAllDone());
+    }
+
+    public void prepareNextRun() {
+        list.forEach((name, segment) -> segment.prepareNextRun());
     }
 
     public SegmentType getType(String segmentName) {
