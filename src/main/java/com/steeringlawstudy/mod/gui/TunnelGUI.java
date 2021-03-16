@@ -79,6 +79,8 @@ public class TunnelGUI {
                 String progressString = "";
                 if (progress <= 0) {
                     progressString = " 0";
+                } else if (progress < 10) {
+                    progressString = " " + progress.toString().substring(0, 1);
                 } else {
                     progressString = progress.toString().substring(0, 2);
                 }
@@ -164,7 +166,7 @@ public class TunnelGUI {
 
         // ALL DIRECTIONS
         fontRenderer.drawStringWithShadow(matrixStack, "Look around to continue reading!",
-                x - 17,y + 160, 0xffffff);
+                x - 17, y + 160, 0xffffff);
 
     }
 }
