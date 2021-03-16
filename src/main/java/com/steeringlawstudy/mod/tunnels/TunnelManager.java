@@ -2,8 +2,6 @@ package com.steeringlawstudy.mod.tunnels;
 
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.gui.TunnelGUI;
-import net.minecraft.client.audio.BackgroundMusicSelector;
-import net.minecraft.client.audio.BackgroundMusicTracks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -197,7 +195,7 @@ public class TunnelManager {
         }
 
         // when end is reached, reset tunnels for next run
-        if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS || currentTunnelIndex == 0) {
+        if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS) {
             list.forEach((name, tunnel) -> {
                 tunnel.prepareNextRun();
             });
@@ -240,7 +238,13 @@ public class TunnelManager {
 
         // determine next tunnel depending on input
         if (goingUp) {
-            if (currentTunnel.allDone || currentTunnelIndex == 0) {
+            if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS) {
+                // Restart by pressing W at panda place
+                currentTunnel = list.firstEntry().getValue();
+                currentTunnelIndex = 0;
+                sound = true;
+
+            } else if (SteeringLawStudy.DEV_MODE || (currentTunnel.allDone || currentTunnelIndex == 0)) {
                 if (list.higherEntry(currentTunnel.name) != null) {
                     currentTunnel = list.higherEntry(currentTunnel.name).getValue();
                     currentTunnelIndex += 1;
@@ -248,7 +252,7 @@ public class TunnelManager {
                 }
             }
 
-        } else if (goingDown && currentTunnelIndex > 0) {
+        } else if (goingDown && currentTunnelIndex > 0 && currentTunnelIndex != SteeringLawStudy.NUM_TUNNELS) {
             if (list.lowerEntry(currentTunnel.name) != null) {
                 currentTunnel = list.lowerEntry(currentTunnel.name).getValue();
                 currentTunnelIndex -= 1;
@@ -270,48 +274,6 @@ public class TunnelManager {
             // reset currentCameraIndex
             currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentTunnel.playerStart);
             updateGUIData();
-        }
-    }
-
-    /**
-     * Changes camera angle of each tunnel with A/D
-     */
-    public static void changeCameraAngle(InputUpdateEvent event) {
-        boolean goingLeft = event.getMovementInput().leftKeyDown;
-        boolean goingRight = event.getMovementInput().rightKeyDown;
-        PlayerEntity player = event.getPlayer();
-
-        currentCameraIndex = currentTunnel.availableCameraAngles.indexOf(currentPlayerLocation);
-        if (currentCameraIndex == -1) return;
-
-        // determine next cameraIndex depending on input
-        if (goingLeft) {
-            if (currentCameraIndex == 0) {
-                currentCameraIndex = currentTunnel.availableCameraAngles.size() - 1;
-            } else {
-                currentCameraIndex = currentCameraIndex - 1;
-            }
-
-        } else if (goingRight) {
-            if (currentCameraIndex == currentTunnel.availableCameraAngles.size() - 1) {
-                currentCameraIndex = 0;
-            } else {
-                currentCameraIndex = currentCameraIndex + 1;
-            }
-        }
-
-        updateGUIData();
-
-        currentPlayerLocation = currentTunnel.availableCameraAngles.get(currentCameraIndex);
-        player.setRawPosition(
-                currentPlayerLocation.getX(),
-                currentPlayerLocation.getY(),
-                currentPlayerLocation.getZ()
-        );
-
-        if (currentTunnel.availableCameraAngles.size() > 1) {
-            world.playSound((PlayerEntity) player, currentPlayerLocation,
-                    SoundEvents.UI_BUTTON_CLICK, SoundCategory.VOICE, 10, 1);
         }
     }
 
@@ -344,11 +306,26 @@ public class TunnelManager {
             t.complete = true;
             Integer counter = (Integer) t.completionCount.get(currentCameraIndex);
             if (counter < SteeringLawStudy.COMPLETIONS) t.completionCount.set(currentCameraIndex, ++counter);
-
             updateGUIData();
 
-            // shooting fireworks after completing an angle/tunnel _ times
-            if (counter == SteeringLawStudy.COMPLETIONS && !t.angleCompleted.get(currentCameraIndex) && !world.isRemote()) {
+            if (counter == SteeringLawStudy.COMPLETIONS) {
+                t.angleCompleted.set(currentCameraIndex, true);
+            }
+
+            // shooting fireworks after completing an angle/tunnel _ times AND going to next angle
+            if (t.angleCompleted.get(currentCameraIndex) && !world.isRemote()) {
+                // go to next angle, or stay put when level is finished
+                if (currentCameraIndex != currentTunnel.availableCameraAngles.size() - 1) {
+                    currentCameraIndex = currentCameraIndex + 1;
+
+                    currentPlayerLocation = currentTunnel.availableCameraAngles.get(currentCameraIndex);
+                    player.setRawPosition(
+                            currentPlayerLocation.getX(),
+                            currentPlayerLocation.getY(),
+                            currentPlayerLocation.getZ()
+                    );
+                }
+
                 launchFireworks();
             }
 
@@ -360,8 +337,6 @@ public class TunnelManager {
      * after a tunnel section is complete, launch fireworks
      */
     private static void launchFireworks() {
-        // when method is entered, the current angle was completed
-        currentTunnel.angleCompleted.set(currentCameraIndex, true);
 /*
                 ParticleType type = ParticleTypes.FIREWORK;
                 IParticleData particleData = new ItemParticleData(type, new ItemStack(Items.ROSE_BUSH));
@@ -422,6 +397,9 @@ public class TunnelManager {
                 currentPlayerLocation.getZ() + 4, firework);
 
         world.addEntity(rocket2);
+
+        // TODO spawn pandas
+
 /*
                     rocketNBT.putInt("LifeTime", 20);
                     rocketNBT.putInt("Count", 5);

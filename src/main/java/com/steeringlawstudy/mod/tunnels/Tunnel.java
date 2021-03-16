@@ -79,6 +79,10 @@ public class Tunnel {
     }
 
     public void prepareNextRun() {
+        allDone = false;
+        completionCount = new ArrayList<>();
+        angleCompleted = new ArrayList<>();
+        setupCounts();
         list.forEach((name, segment) -> segment.prepareNextRun());
     }
 
@@ -91,7 +95,7 @@ public class Tunnel {
     }
 
     public void setupCounts() {
-        for (BlockPos bp: availableCameraAngles) {
+        for (BlockPos bp : availableCameraAngles) {
             completionCount.add(0);
             angleCompleted.add(false);
         }

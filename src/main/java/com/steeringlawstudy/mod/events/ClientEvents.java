@@ -80,7 +80,7 @@ public class ClientEvents {
      */
     @SubscribeEvent
     public static void teleportPlayer(InputUpdateEvent event) {
-        if (!SteeringLawStudy.DEV_MODE) {
+        if (!SteeringLawStudy.BUILD_MODE) {
             LivingEntity player = event.getPlayer();
             MovementInput input = event.getMovementInput();
             float currMoveStrafe = input.moveStrafe;
@@ -98,11 +98,7 @@ public class ClientEvents {
 
             // ...and enable teleport functionality
             if (teleportCooldown == 0) {
-                if (currMoveStrafe != 0) {
-                    TunnelManager.changeCameraAngle(event);
-                    // 10 ticks cooldown = 0.5 sec.
-                    teleportCooldown = 10;
-                } else if (currMoveForward != 0) {
+                if (currMoveForward != 0) {
                     TunnelManager.changeTunnel(event);
                     // 10 ticks cooldown = 0.5 sec.
                     teleportCooldown = 10;
@@ -118,7 +114,7 @@ public class ClientEvents {
      */
     @SubscribeEvent
     public static void ignoreStandardInput(PlayerInteractEvent event) {
-        if (!SteeringLawStudy.DEV_MODE) {
+        if (!SteeringLawStudy.BUILD_MODE) {
             MouseHelper mh = Minecraft.getInstance().mouseHelper;
 
             if (mh.isLeftDown() || mh.isMiddleDown() || mh.isRightDown()) {
