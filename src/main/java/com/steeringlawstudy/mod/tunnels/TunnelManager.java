@@ -194,13 +194,6 @@ public class TunnelManager {
             }
         }
 
-        // when end is reached, reset tunnels for next run
-        if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS) {
-            list.forEach((name, tunnel) -> {
-                tunnel.prepareNextRun();
-            });
-        }
-
         // search current pos, set it visited
         list.forEach((name, tunnel) -> {
             if (tunnel.checkFor(segmentName)) {
@@ -225,6 +218,13 @@ public class TunnelManager {
                 currentTunnel.complete = false;
             }
         }
+
+        // when end is reached, prepare tunnels for next run
+        if (currentTunnelIndex == SteeringLawStudy.NUM_TUNNELS) {
+            list.forEach((name, tunnel) -> {
+                tunnel.prepareNextRun();
+            });
+        }
     }
 
     /**
@@ -243,12 +243,15 @@ public class TunnelManager {
                 currentTunnel = list.firstEntry().getValue();
                 currentTunnelIndex = 0;
                 sound = true;
+                SteeringLawStudy.LOGGER.info("RESTARTED");
 
             } else if (SteeringLawStudy.DEV_MODE || (currentTunnel.allDone || currentTunnelIndex == 0)) {
                 if (list.higherEntry(currentTunnel.name) != null) {
                     currentTunnel = list.higherEntry(currentTunnel.name).getValue();
                     currentTunnelIndex += 1;
                     sound = true;
+
+                    SteeringLawStudy.LOGGER.info("STARTED LEVEL " + currentTunnelIndex);
                 }
             }
 
@@ -389,6 +392,8 @@ public class TunnelManager {
             currentTunnel.setAllDone();
             world.playSound((PlayerEntity) player, currentPlayerLocation,
                     SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, 100, 1);
+
+            SteeringLawStudy.LOGGER.info("LEVEL COMPLETE");
         }
 
         // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE

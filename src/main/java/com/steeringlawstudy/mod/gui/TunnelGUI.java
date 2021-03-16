@@ -119,9 +119,9 @@ public class TunnelGUI {
                     x + 42, y + 170, 0xffffff);
 
             fontRenderer.drawStringWithShadow(matrixStack, "STORY",
-                    x + 50, y, 0xffff00);
+                    x + 49, y, 0xffff00);
             fontRenderer.drawStringWithShadow(matrixStack, "=====",
-                    x + 50, y + 10, 0xffff00);
+                    x + 49, y + 10, 0xffff00);
 
             fontRenderer.drawStringWithShadow(matrixStack, "\"Please help us!\", the sad panda cries. \"An evil force",
                     x - 69, y + 50, 0xffffff);
@@ -137,9 +137,9 @@ public class TunnelGUI {
                     x + 42, y + 170, 0xffffff);
 
             fontRenderer.drawStringWithShadow(matrixStack, "OBJECTIVE",
-                    x + 39, y, 0xffff00);
+                    x + 38, y, 0xffff00);
             fontRenderer.drawStringWithShadow(matrixStack, "=========",
-                    x + 39, y + 10, 0xffff00);
+                    x + 37, y + 10, 0xffff00);
 
             fontRenderer.drawStringWithShadow(matrixStack, "Please help the pandas by tracing the evil seals!",
                     x - 59, y + 50, 0xffffff);
@@ -152,9 +152,9 @@ public class TunnelGUI {
                     x + 42, y + 170, 0xffffff);
 
             fontRenderer.drawStringWithShadow(matrixStack, "CONTROLS",
-                    x + 40, y, 0xffff00);
+                    x + 41, y, 0xffff00);
             fontRenderer.drawStringWithShadow(matrixStack, "========",
-                    x + 40, y + 10, 0xffff00);
+                    x + 41, y + 10, 0xffff00);
 
             fontRenderer.drawStringWithShadow(matrixStack, "Use [W] and [S] to change location",
                     x - 19, y + 50, 0xffffff);
@@ -164,7 +164,7 @@ public class TunnelGUI {
 
         // ALL DIRECTIONS
         fontRenderer.drawStringWithShadow(matrixStack, "Look around to continue reading!",
-                x - 15,y + 160, 0xffffff);
+                x - 17,y + 160, 0xffffff);
 
     }
 }

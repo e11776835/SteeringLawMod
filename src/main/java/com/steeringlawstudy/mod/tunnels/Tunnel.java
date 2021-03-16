@@ -40,7 +40,7 @@ public class Tunnel {
             stop = s;
         }
 
-        s.prepareNextRun();
+        s.reset();
     }
 
     /**
@@ -60,7 +60,6 @@ public class Tunnel {
             reset();
             s.setVisited();
             start.setVisited();
-            //SteeringLawStudy.LOGGER.info("now starting tunnel");
         } else if (start.wasVisited()) {
             s.setVisited();
         }
@@ -83,7 +82,7 @@ public class Tunnel {
         completionCount = new ArrayList<>();
         angleCompleted = new ArrayList<>();
         setupCounts();
-        list.forEach((name, segment) -> segment.prepareNextRun());
+        reset();
     }
 
     public SegmentType getType(String segmentName) {
