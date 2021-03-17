@@ -2,7 +2,11 @@ package com.steeringlawstudy.mod.tunnels;
 
 import com.steeringlawstudy.mod.SteeringLawStudy;
 import com.steeringlawstudy.mod.gui.TunnelGUI;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.PandaEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.item.ItemStack;
@@ -14,16 +18,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.InputUpdateEvent;
 
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 /**
  * manager of all steering law tunnels, interfaces with ClientEvents
  */
 public class TunnelManager {
-    public static TreeMap<String, Tunnel> list = new TreeMap<>();
-    public static World world;
-    public static LivingEntity player;
-    public static boolean found, started;
+    private static TreeMap<String, Tunnel> list = new TreeMap<>();
+    private static ArrayList<Entity> pandas = new ArrayList<>();
+    private static World world;
+    private static LivingEntity player;
+    private static boolean found, started;
 
     private static int currentCameraIndex, currentTunnelIndex;
     private static Tunnel currentTunnel;
@@ -224,6 +230,8 @@ public class TunnelManager {
             list.forEach((name, tunnel) -> {
                 tunnel.prepareNextRun();
             });
+
+            pandaManager(true);
         }
     }
 
@@ -330,6 +338,7 @@ public class TunnelManager {
                 }
 
                 launchFireworks();
+                pandaManager(false);
             }
 
         }
@@ -400,15 +409,56 @@ public class TunnelManager {
                 currentPlayerLocation.getZ() + 4, firework);
 
         world.addEntity(rocket2);
-
-        // TODO spawn pandas
-
 /*
                     rocketNBT.putInt("LifeTime", 20);
                     rocketNBT.putInt("Count", 5);
                     rocketNBT.put("FireworksItem", fireworksItemNBT);
                     rocket.writeAdditional(rocketNBT);
 */
+    }
+
+    /**
+     * handling all panda spawns caused by gameplay
+     *
+     * @param reset decides if pandas get removed or added
+     */
+    private static void pandaManager(boolean reset) {
+        if (reset) {
+            // delete pandas
+            pandas.forEach(p -> {
+                p.remove();
+            });
+            pandas.clear();
+
+        } else {
+            // NO. of Pandas that get spawned after angle is finished
+            for (int i = 0; i < 5; i++) {
+                Entity panda = new PandaEntity(EntityType.PANDA, world);
+
+                // Determine spawn position..
+                float min = -12f;
+                float max = 12f;
+                int randX = (int) (Math.random() * (max - min) + min);
+
+                min = 9;
+                max = 13;
+                int randZ = (int) (Math.random() * (max - min) + min);
+
+                // ..relative to Player
+                BlockPos pandaPos = currentPlayerLocation.add(randX, 10, randZ);
+                SteeringLawStudy.LOGGER.info(pandaPos);
+
+                // make sure Pandas don't spawn mid-air
+                while (world.getBlockState(pandaPos.add(0, -1, 0)).getBlockState() == Blocks.AIR.getDefaultState()) {
+                    pandaPos = pandaPos.add(0, -1, 0);
+                }
+
+                SteeringLawStudy.LOGGER.info(pandaPos);
+                panda.setPosition(pandaPos.getX(), pandaPos.getY(), pandaPos.getZ());
+                pandas.add(panda);
+                world.addEntity(panda);
+            }
+        }
     }
 
     /**

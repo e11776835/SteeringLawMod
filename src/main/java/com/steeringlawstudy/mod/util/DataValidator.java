@@ -26,7 +26,6 @@ public class DataValidator {
      */
     public static void parseData() {
         LocalDateTime now = LocalDateTime.now();
-        // todo --> to be exportable, file directory should be handled differently
         String fileName = "data-" + now.getYear() +
                 "-" + now.getMonthValue() +
                 "-" + now.getDayOfMonth() +

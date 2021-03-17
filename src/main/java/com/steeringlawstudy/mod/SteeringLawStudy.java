@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 public class SteeringLawStudy {
     public static final boolean DEV_MODE = false;
     public static final boolean BUILD_MODE = false;
-    public static final int COMPLETIONS = 10; // number of completions needed per angle/tunnel
+    public static final int COMPLETIONS = 2; // number of completions needed per angle/tunnel
     public static final int NUM_TUNNELS = 6; // matches currentTunnelIndex (no. of tunnels + start + end - 1)
     public static final String OUT_PATH = "../study"; // output path for study logfiles
 
