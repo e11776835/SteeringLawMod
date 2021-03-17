@@ -250,8 +250,6 @@ public class TunnelManager {
                     currentTunnel = list.higherEntry(currentTunnel.name).getValue();
                     currentTunnelIndex += 1;
                     sound = true;
-
-                    SteeringLawStudy.LOGGER.info("STARTED LEVEL " + currentTunnelIndex);
                 }
             }
 
@@ -271,6 +269,8 @@ public class TunnelManager {
                     currentPlayerLocation.getY(),
                     currentPlayerLocation.getZ()
             );
+
+            SteeringLawStudy.LOGGER.info("LEVEL " + currentTunnelIndex);
 
             world.playSound((PlayerEntity) player, currentPlayerLocation,
                     SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.MASTER, 60, 1);
@@ -392,8 +392,6 @@ public class TunnelManager {
             currentTunnel.setAllDone();
             world.playSound((PlayerEntity) player, currentPlayerLocation,
                     SoundEvents.BLOCK_BEACON_DEACTIVATE, SoundCategory.MASTER, 100, 1);
-
-            SteeringLawStudy.LOGGER.info("LEVEL COMPLETE");
         }
 
         // SHOOT 1 ROCKET IF JUST ANGLE IS COMPLETE

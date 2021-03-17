@@ -72,7 +72,7 @@ public class DataValidator {
                 boolean running = true;
 
                 // go through log file and parse relevant data..
-                out.println("===[tick]=== ===[status]=== =====[pos]===== =[ms]=");
+                out.println("===[tick]=== ====[block]==== ==[pos]== \t=======[plyrPos]========= ==[ms]=");
 
                 while (running) {
                     // only read lines containing the keyword "trgt"
@@ -127,6 +127,8 @@ public class DataValidator {
                         lastBlock = block;
                         lastPos = pos;
                         lastTick = tick;
+                    } else if (line.contains("LEVEL")) {
+                        out.println(line.substring(line.lastIndexOf("LEVEL")));
                     }
 
                     if (in.hasNextLine()) {
