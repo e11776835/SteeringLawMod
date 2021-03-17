@@ -34,6 +34,7 @@ public class DataValidator {
             // create output file
             File path = new File(OUT_PATH);
             File log = new File(path + "/" + fileName + ".log");
+            File stats = new File(path + "/" + fileName + "_STATS.log");
 
             if (!path.mkdirs() && !path.exists()) {
                 LOGGER.error("COULD NOT CREATE DIRECTORY! - " + path);
@@ -152,6 +153,73 @@ public class DataValidator {
                         out.println("==================================");
                         running = false;
                     }
+                }
+
+                in.close();
+                out.close();
+
+                // calculate stats from logfile
+                in = new Scanner(log);
+                out = new PrintWriter(stats);
+                line = in.nextLine(); // skip header
+                line = in.nextLine();
+                boolean print = false;
+                boolean success = false;
+                int duration = 0;
+                int lastDuration = 0;
+
+                // mode 0 = looking for start
+                // mode 1 = looking for path / out of bounds
+                // mode 2 = looking for finish / out of bounds
+                int mode = 0;
+
+                while (in.hasNextLine()) {
+                    if (!line.contains("LEVEL")) {
+                        if (mode == 0) {
+                            if (line.contains(START_BLOCK)) {
+                                mode = 1;
+                                duration = Integer.decode(line.substring(line.lastIndexOf('\t') + 1));
+                            }
+
+                        } else if (mode == 1) {
+                            if (line.contains("bounds")) {
+                                print = true;
+
+                            } else if (line.contains(PATH_BLOCK)) {
+                                mode = 2;
+                                lastDuration = Integer.decode(line.substring(line.lastIndexOf('\t') + 1));
+                            }
+                        } else {
+                            if (line.contains("bounds")) {
+                                print = true;
+
+                            } else if (line.contains(STOP_BLOCK)) {
+                                print = true;
+                                success = true;
+                            }
+                        }
+
+                        if (print) {
+                            mode = 0;
+
+                            if (!success) {
+                                out.println("Miss");
+                                duration = 0;
+                                lastDuration = 0;
+
+                            } else {
+                                int result = duration + lastDuration;
+                                out.println("Hit\t" + result + "ms"); // TODO ZEIT AUSRECHNEN
+                            }
+                        }
+                        print = false;
+                        success = false;
+
+                    } else {
+                        out.println(line);
+                    }
+
+                    line = in.nextLine();
                 }
 
                 in.close();
