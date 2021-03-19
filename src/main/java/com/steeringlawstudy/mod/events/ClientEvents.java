@@ -83,7 +83,6 @@ public class ClientEvents {
         if (!SteeringLawStudy.BUILD_MODE) {
             LivingEntity player = event.getPlayer();
             MovementInput input = event.getMovementInput();
-            float currMoveStrafe = input.moveStrafe;
             float currMoveForward = input.moveForward;
 
             if (teleportCooldown > 0) teleportCooldown--;

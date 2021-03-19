@@ -11,7 +11,6 @@ public class Segment {
     public String name;
     private BlockPos pos;
     private SegmentType type;
-    private int x, y, z;
     private boolean visited = false;
     private Tunnel tunnel;
 
@@ -19,9 +18,6 @@ public class Segment {
         pos = p;
         type = st;
         tunnel = t;
-        x = p.getX();
-        y = p.getY();
-        z = p.getZ();
         name = TunnelManager.getSegmentName(p);
     }
 
@@ -39,10 +35,6 @@ public class Segment {
 
     public SegmentType getType() {
         return type;
-    }
-
-    public BlockPos getPos() {
-        return pos;
     }
 
     public void reset() {

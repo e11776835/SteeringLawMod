@@ -9,14 +9,13 @@ import java.util.Scanner;
 
 import static com.steeringlawstudy.mod.SteeringLawStudy.LOGGER;
 import static com.steeringlawstudy.mod.SteeringLawStudy.OUT_PATH;
-
 import static com.steeringlawstudy.mod.SteeringLawStudy.START_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.STOP_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.PATH_BLOCK;
 import static com.steeringlawstudy.mod.SteeringLawStudy.PATH_VISITED_BLOCK;
 
 /**
- * util class for experiment data handling
+ * util class for experiment data recording and MT calculation
  */
 public class DataValidator {
 
@@ -101,7 +100,6 @@ public class DataValidator {
                                 statusChanged = true;
                                 outputText = "out of bounds \t\t\t\t";
                             } else {
-                                // if (!block.equalsIgnoreCase(lastBlock) || !pos.equalsIgnoreCase(lastPos)) {
                                 if (!block.equalsIgnoreCase(lastBlock)) {
                                     outputText = lastBlock + "\t" + lastPos;
                                     statusChanged = true;
@@ -206,13 +204,13 @@ public class DataValidator {
                             mode = 0;
 
                             if (!success) {
-                                out.println("Miss");
+                                out.println("-");
                                 duration = 0;
                                 lastDuration = 0;
 
                             } else {
                                 int result = duration + lastDuration;
-                                out.println("Hit\t" + result + "ms"); // TODO ZEIT AUSRECHNEN
+                                out.println("" + result);
                             }
                         }
                         print = false;

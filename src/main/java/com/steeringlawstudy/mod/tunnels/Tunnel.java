@@ -10,7 +10,6 @@ import java.util.HashMap;
  * tunnel for steering law experiments, contains all segments from start to finish
  */
 public class Tunnel {
-    // UNIQUE name = BlockPos of START-BLOCK
     public String name;
     private World world;
     public HashMap<String, Segment> list = new HashMap<>();
@@ -83,10 +82,6 @@ public class Tunnel {
         angleCompleted = new ArrayList<>();
         setupCounts();
         reset();
-    }
-
-    public SegmentType getType(String segmentName) {
-        return list.get(segmentName).getType();
     }
 
     public World getWorld() {

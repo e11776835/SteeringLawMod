@@ -38,7 +38,7 @@ public class PosHelper {
     }
 
     /**
-     * fixes bug in minecrafts raytrace methods
+     * fixes bug in minecraft 1.16.1 raytrace methods
      * (depending on looking direction, raycast has issues)
      * @return corrected block and position
      */
