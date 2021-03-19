@@ -129,6 +129,9 @@ public class DataValidator {
                         lastTick = tick;
                     } else if (line.contains("LEVEL")) {
                         out.println(line.substring(line.lastIndexOf("LEVEL")));
+
+                    } else if (line.contains("CHANGING POSITION")) {
+                        out.println(line.substring(line.lastIndexOf("CHANGING")));
                     }
 
                     if (in.hasNextLine()) {
@@ -174,7 +177,7 @@ public class DataValidator {
                 int mode = 0;
 
                 while (in.hasNextLine()) {
-                    if (!line.contains("LEVEL")) {
+                    if (!line.contains("LEVEL") && !line.contains("CHANGING POSITION")) {
                         if (mode == 0) {
                             if (line.contains(START_BLOCK)) {
                                 mode = 1;

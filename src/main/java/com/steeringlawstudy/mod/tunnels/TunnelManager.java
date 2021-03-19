@@ -64,9 +64,9 @@ public class TunnelManager {
         // TUNNELS
         BlockPos start = new BlockPos(190, 66, -6);
         Tunnel tunnel = new Tunnel(TunnelManager.getSegmentName(start), world);
-        tunnel.playerStart = new BlockPos(186, 65, -16);
+        tunnel.playerStart = new BlockPos(186, 65, -15);
 
-        // tunnel 1: 7 wide, horizontal, angles: 10 blocks away, 18 blocks away
+        // tunnel 1: 7 wide, horizontal, angles: 9 blocks away, 17 blocks away
         tunnel.add(start, SegmentType.START);
         tunnel.add(new BlockPos(189, 66, -6), SegmentType.PATH);
         tunnel.add(new BlockPos(188, 66, -6), SegmentType.PATH);
@@ -84,7 +84,7 @@ public class TunnelManager {
         Tunnel tunnel_2 = new Tunnel(TunnelManager.getSegmentName(start_2), world);
         tunnel_2.playerStart = new BlockPos(223, 66, 75);
 
-        // tunnel 2: 5 high, vertical, angles: 5 blocks away, 8 blocks away
+        // tunnel 2: 5 high, vertical, angles: 5 blocks away, 9 blocks away
         tunnel_2.add(start_2, SegmentType.START);
         tunnel_2.add(new BlockPos(222, 65, 80), SegmentType.PATH);
         tunnel_2.add(new BlockPos(222, 66, 80), SegmentType.PATH);
@@ -98,7 +98,7 @@ public class TunnelManager {
         Tunnel tunnel_3 = new Tunnel(TunnelManager.getSegmentName(start_3), world);
         tunnel_3.playerStart = new BlockPos(270, 80, 54);
 
-        // tunnel 3: 4 wide hor., corner, 4 vertical, angles: 7 blocks away, 17 blocks away
+        // tunnel 3: 4 wide hor., corner, 4 vertical, angles: 7 blocks away, 14 blocks away
         tunnel_3.add(start_3, SegmentType.START);
         tunnel_3.add(new BlockPos(271, 83, 61), SegmentType.PATH);
         tunnel_3.add(new BlockPos(270, 83, 61), SegmentType.PATH);
@@ -130,9 +130,9 @@ public class TunnelManager {
 
         BlockPos start_5 = new BlockPos(211, 81, 39);
         Tunnel tunnel_5 = new Tunnel(TunnelManager.getSegmentName(start_5), world);
-        tunnel_5.playerStart = new BlockPos(209, 82, 35);
+        tunnel_5.playerStart = new BlockPos(209, 82, 33);
 
-        // tunnel 5: 5 wide, corner, 5 high, angles: 4 blocks away, 6 blocks away
+        // tunnel 5: 5 wide, corner, 5 high, angles: 6 blocks away, 10 blocks away
         tunnel_5.add(start_5, SegmentType.START);
         tunnel_5.add(new BlockPos(210, 81, 39), SegmentType.PATH);
         tunnel_5.add(new BlockPos(209, 81, 39), SegmentType.PATH);
@@ -153,11 +153,11 @@ public class TunnelManager {
         tunnel_4.availableCameraAngles.add(tunnel_4.playerStart);
         tunnel_5.availableCameraAngles.add(tunnel_5.playerStart);
 
-        tunnel.availableCameraAngles.add(new BlockPos(186, 65, -24));
-        tunnel_2.availableCameraAngles.add(new BlockPos(223, 66, 72));
-        tunnel_3.availableCameraAngles.add(new BlockPos(270, 80, 44));
+        tunnel.availableCameraAngles.add(new BlockPos(186, 65, -23));
+        tunnel_2.availableCameraAngles.add(new BlockPos(223, 66, 71));
+        tunnel_3.availableCameraAngles.add(new BlockPos(270, 80, 47));
         tunnel_4.availableCameraAngles.add(new BlockPos(248, 81, 120));
-        tunnel_5.availableCameraAngles.add(new BlockPos(209, 82, 33));
+        tunnel_5.availableCameraAngles.add(new BlockPos(209, 82, 29));
 
         // SETUP COUNTS
         for (Tunnel t : list.values()) {
@@ -335,6 +335,7 @@ public class TunnelManager {
                             currentPlayerLocation.getY(),
                             currentPlayerLocation.getZ()
                     );
+                    SteeringLawStudy.LOGGER.info("CHANGING POSITION");
                 }
 
                 launchFireworks();
@@ -446,14 +447,21 @@ public class TunnelManager {
 
                 // ..relative to Player
                 BlockPos pandaPos = currentPlayerLocation.add(randX, 10, randZ);
-                SteeringLawStudy.LOGGER.info(pandaPos);
+
+                min = -12f;
+                max = 12f;
+
+                // make sure Pandas don't spawn in an object
+                while (world.getBlockState(pandaPos).getBlockState() != Blocks.AIR.getDefaultState()) {
+                    randX = (int) (Math.random() * (max - min) + min);
+                    pandaPos = currentPlayerLocation.add(randX, 10, randZ);
+                }
 
                 // make sure Pandas don't spawn mid-air
                 while (world.getBlockState(pandaPos.add(0, -1, 0)).getBlockState() == Blocks.AIR.getDefaultState()) {
                     pandaPos = pandaPos.add(0, -1, 0);
                 }
 
-                SteeringLawStudy.LOGGER.info(pandaPos);
                 panda.setPosition(pandaPos.getX(), pandaPos.getY(), pandaPos.getZ());
                 pandas.add(panda);
                 world.addEntity(panda);
